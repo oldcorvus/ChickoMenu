@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command:  >
+      sh -c "python manage.py migrate --settings=ChickoTour.settings.development &&
+             python manage.py runserver 0.0.0.0:8000 --settings=ChickoTour.settings.development"
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
