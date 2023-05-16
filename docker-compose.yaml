@@ -4,9 +4,21 @@ services:
   web:
     build: .
     command:  >
-      sh -c "python manage.py migrate --settings=ChickoTour.settings.development &&
-             python manage.py runserver 0.0.0.0:8000 --settings=ChickoTour.settings.development"
+      sh -c "python manage.py migrate --settings=ChickoMenu.settings.development &&
+             python manage.py runserver 0.0.0.0:8000 --settings=ChickoMenu.settings.development"
     volumes:
       - .:/code
     ports:
       - 8000:8000
+    depends_on:
+      - db
+    env_file:
+      - "./.env.db"
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+volumes:
+  postgres_data:
