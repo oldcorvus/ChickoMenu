@@ -6,12 +6,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
 environ.Env.read_env()
-
 CELERY_BROKER_URL="redis://redis:6379"
 CELERY_BACKEND="redis://redis:6379"
+
+AUTH_USER_MODEL = "accounts.User"
+
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
-AUTH_USER_MODEL = "accounts.User"
+API_KEY= env("API_KEY")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -33,7 +35,25 @@ INSTALLED_APPS = [
 
 
 
-
+# DJOSER CONFIG
+DJOSER = {
+    "LOGIN_FIELD": "username",
+    "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    "SEND_CONFIRMATION_EMAIL": True,
+    "ACTIVATION_URL": "activate/{uid}/{token}",
+    "SOCIAL_AUTH_TOKEN_STRATEGY": "djoser.social.token.jwt.TokenStrategy",
+    "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": [
+        "your redirect url",
+        "your redirect url",
+    ],
+    "SERIALIZERS": {
+        "user_create": "accounts.serializers.UserSerializer",  # custom serializer
+        "user": "djoser.serializers.UserSerializer",
+        "current_user": "djoser.serializers.UserSerializer",
+        "user_delete": "djoser.serializers.UserSerializer",
+    },
+}
 
 
 MIDDLEWARE = [
@@ -98,7 +118,7 @@ STATIC_URL = env("STATIC_URL")
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  
+        'rest_framework.authentication.TokenAuthentication',  # <-- And here
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAdminUser"],
     'DEFAULT_THROTTLE_RATES': {
