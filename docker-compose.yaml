@@ -22,32 +22,29 @@ services:
       - ./.env.db
 
   redis:
-    image: redis:alpine
-    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
 
   celery:
     build: ./
     command: celery -A ChickoMenu worker -l info 
+    env_file:
+      - "./.env"
     volumes:
-      - ./:/usr/src/app/
+      - .:/code
     depends_on:
       - redis
 
-  app:
-    build: ./
-    command: celery -A ChickoMenu beat -l info
+  flower:
+    build: .
+    command: celery  -A ChickoMenu --broker=redis://redis:6379  flower 
     volumes:
-      - ./:/usr/src/app/
+      - .:/code
     depends_on:
       - redis
-  dashboard:
-      build: ./
-      command: celery -A ChickoMenu --broker=redis://redis:6379 flower 
-      ports:
-        - 5555:5555
-      depends_on:
-        - web
-        - redis
-        - celery
+      - celery
+    ports:
+      - "5555:5555"
 volumes:
   postgres_data:
