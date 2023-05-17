@@ -9,7 +9,7 @@ environ.Env.read_env()
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
-
+AUTH_USER_MODEL = "accounts.User"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'djoser',
 
     #local
-
+    "accounts.apps.AccountsConfig",
 ]
 
 

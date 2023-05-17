@@ -3,9 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django_jalali.db import models as jmodels
 from .manager import UserManager
-from ..utils.str import get_random_str
+from utils.str import get_random_str
 from django.urls import reverse
 import uuid
+
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
 
 
 def upload_location(instance, filename):
