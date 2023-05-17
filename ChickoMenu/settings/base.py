@@ -7,6 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env()
 
+CELERY_BROKER_URL="redis://redis:6379"
+CELERY_BACKEND="redis://redis:6379"
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 AUTH_USER_MODEL = "accounts.User"

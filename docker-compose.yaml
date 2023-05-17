@@ -20,5 +20,34 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.db
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  celery:
+    build: ./
+    command: celery -A ChickoMenu worker -l info 
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - redis
+
+  app:
+    build: ./
+    command: celery -A ChickoMenu beat -l info
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - redis
+  dashboard:
+      build: ./
+      command: celery -A ChickoMenu --broker=redis://redis:6379 flower 
+      ports:
+        - 5555:5555
+      depends_on:
+        - web
+        - redis
+        - celery
 volumes:
   postgres_data:
