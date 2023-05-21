@@ -6,6 +6,7 @@ from .manager import UserManager
 from utils.str import get_random_str
 from django.urls import reverse
 from utils.models import TimeStampedUUIDModel
+import uuid
 try:
     from django.utils.translation import ugettext_lazy as _
 except ImportError:
