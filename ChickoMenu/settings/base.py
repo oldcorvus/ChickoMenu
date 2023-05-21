@@ -37,6 +37,8 @@ INSTALLED_APPS = [
 
     #local
     "accounts.apps.AccountsConfig",
+    "theme.apps.ThemeConfig",
+
 ]
 
 
