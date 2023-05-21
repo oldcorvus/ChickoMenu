@@ -1,5 +1,6 @@
 import environ
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,6 +15,12 @@ AUTH_USER_MODEL = "accounts.User"
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 API_KEY= env("API_KEY")
+
+LANGUAGES = (
+    ('en', _('English')),
+    ('fa', _('Persian')),
+)
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -60,11 +67,15 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    'django.middleware.locale.LocaleMiddleware', 
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+LOCALE_PATHS = [
+    BASE_DIR / 'locale/',
 ]
 
 ROOT_URLCONF = "ChickoMenu.urls"

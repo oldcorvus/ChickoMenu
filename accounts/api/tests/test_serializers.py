@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from rest_framework import serializers
-from ..serializers import UserSerializer
+from ..serializers import UserSerializer, SMSVerificationSerializer
+from django.utils.translation import activate
+
 
 User = get_user_model()
 
@@ -59,3 +60,23 @@ class UserSerializerTestCase(TestCase):
         self.serializer = UserSerializer(data=self.user_data)
         self.assertFalse(self.serializer.is_valid())
         self.assertEqual(self.serializer.errors['non_field_errors'][0], 'Password must be at least 8 characters.')
+
+
+
+
+
+class SMSVerificationSerializerTestCase(TestCase):
+    def setUp(self):
+        self.sms_data = {
+            'code': '123456',
+        }
+        self.serializer = SMSVerificationSerializer(data=self.sms_data)
+
+    def test_serializer_with_valid_data(self):
+        self.assertTrue(self.serializer.is_valid())
+
+    def test_serializer_with_invalid_code(self):
+        self.sms_data['code'] = 'abc123'
+        self.serializer = SMSVerificationSerializer(data=self.sms_data)
+        self.assertFalse(self.serializer.is_valid())
+
