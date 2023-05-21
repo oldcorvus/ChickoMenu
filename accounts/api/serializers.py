@@ -56,3 +56,17 @@ class UserSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
         validated_data['password'] = hashed_password
 
         return super().create(validated_data)
+
+class SMSVerificationSerializer(serializers.Serializer):
+    code = serializers.CharField(
+        max_length=6,
+        min_length=6,
+    )
+
+    def validate_code(self, value):
+        try:
+            int(value)
+        except :
+            raise serializers.ValidationError(_("The entered code is incorrect."))
+
+        return value
