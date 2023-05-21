@@ -5,8 +5,7 @@ from django_jalali.db import models as jmodels
 from .manager import UserManager
 from utils.str import get_random_str
 from django.urls import reverse
-import uuid
-
+from utils.models import TimeStampedUUIDModel
 try:
     from django.utils.translation import ugettext_lazy as _
 except ImportError:
@@ -62,3 +61,20 @@ class User(AbstractUser):
     def get_absolute_url(self):
         return reverse('accounts:user-profile', args=(self.username,))
 
+
+class SMSVerification(TimeStampedUUIDModel):
+    security_code = models.CharField(max_length=120)
+    phone_number = models.CharField(max_length=11)
+    session_token = models.CharField(max_length=500)
+    is_verified = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "sms_verification"
+        verbose_name = "SMS Verification"
+        verbose_name_plural = "SMS Verifications"
+        ordering = ("-modified_at",)
+        unique_together = ("security_code", "phone_number", "session_token")
+
+
+    def __str__(self):
+        return f"{self.phone_number}: {self.security_code}"
