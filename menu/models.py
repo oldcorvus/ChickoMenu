@@ -26,7 +26,7 @@ class Menu(TimeStampedUUIDModel):
     address = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     is_paid = models.BooleanField(default=False)
-    last_time_paid = models.DateTimeField(default=timezone.datetime.now())
+    last_time_paid = models.DateTimeField(default=timezone.now)
     primary_color = models.CharField(max_length=7, default='#007bff')
     secondary_color = models.CharField(max_length=7, default='#6c757d')
     theme = models.ForeignKey(Theme, on_delete=models.SET_NULL, null=True, blank=True)
