@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "rest_framework",
     'rest_framework.authtoken',
     'djoser',
+    'drf_yasg',
 
     #local
     "accounts.apps.AccountsConfig",
@@ -130,6 +131,7 @@ STATIC_URL = env("STATIC_URL")
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',  # <-- And here
     ],
