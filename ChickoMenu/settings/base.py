@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     #third party
     "rest_framework",
     'rest_framework.authtoken',
+    'corsheaders',
     'djoser',
     'drf_yasg',
 
@@ -82,6 +83,8 @@ MIDDLEWARE = [
 LOCALE_PATHS = [
     BASE_DIR / 'locale/',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = "ChickoMenu.urls"
 
@@ -135,11 +138,12 @@ STATIC_URL = env("STATIC_URL")
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+        'rest_framework.authentication.TokenAuthentication',  
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAdminUser"],
     'DEFAULT_THROTTLE_RATES': {
         "authentication": "8/hour",
         "verify_authentication": "8/hour",
     },
+
 }
