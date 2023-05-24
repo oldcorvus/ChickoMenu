@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from ..models import Menu, Category
+from ..models import Menu, Category, MenuItem
+import decimal
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 
@@ -131,3 +133,34 @@ class CategoryModelTestCase(TestCase):
             emoji='🍔'
         )
         self.assertEqual(len(category.name), 255)
+
+class MenuItemModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user(username='testuser', password='testpass',
+        email="testemail@email.com", phone_number="09905150258")
+        menu = Menu.objects.create(name='Test Menu' , owner =user )
+        category = Category.objects.create(menu=menu, name='Test Category')
+        MenuItem.objects.create(
+            menu=menu,
+            id ='f1bedde9-be1e-4f1f-91bb-793a383eaae7',
+            category=category,
+            name='Test Item',
+            description='Test Description',
+            price=decimal.Decimal('10.00'),
+            discount=decimal.Decimal('0.8'),
+            image=SimpleUploadedFile('test_image.jpg', b'content'),
+            is_available=True,
+        )
+
+    def test_menu_foreign_key(self):
+        menu_item = MenuItem.objects.get(id ='f1bedde9-be1e-4f1f-91bb-793a383eaae7')
+        self.assertEqual(menu_item.menu.name, 'Test Menu')
+
+    def test_category_foreign_key(self):
+        menu_item = MenuItem.objects.get(id ='f1bedde9-be1e-4f1f-91bb-793a383eaae7')
+        self.assertEqual(menu_item.category.name, 'Test Category')
+
+    def test_price_decimal_places(self):
+        menu_item = MenuItem.objects.get(id ='f1bedde9-be1e-4f1f-91bb-793a383eaae7')
+        self.assertEqual(menu_item.price, decimal.Decimal('10.00'))
