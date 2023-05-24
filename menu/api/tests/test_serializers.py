@@ -1,7 +1,15 @@
 from django.test import TestCase
-from ..serializers import MenuItemSerializer,MenuDetailSerializer, CategorySerializer
+from ..serializers import MenuItemSerializer,MenuDetailSerializer,\
+    MenuSerializer, CategorySerializer
 from menu.models import MenuItem, Menu, Category
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
+
+
 User = get_user_model()
 
 
@@ -116,3 +124,36 @@ class MenuDetailSerializerTestCase(TestCase):
     def test_name_field_content(self):
         data = self.serializer.data
         self.assertEqual(data['name'], self.menu_data['name'])
+
+class MenuSerializerTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+ 
+        self.menu_data = {
+            'name': 'My Menu',
+            'image': 'https://example.com/menu.jpg',
+            'owner' : self.user,
+        }
+        Menu.objects.create(**self.menu_data)
+
+        self.serializer = MenuSerializer(data=self.menu_data, context={'request': {'user': self.user}})
+
+    def test_serializer_with_valid_data(self):
+        self.assertTrue(self.serializer.is_valid())
+
+    def test_serializer_with_blank_name_field(self):
+        self.menu_data['name'] = ''
+        serializer = MenuSerializer(data=self.menu_data)
+        with self.assertRaises(ValidationError) as context:
+            serializer.is_valid(raise_exception=True)
+        self.assertEqual(context.exception.detail, {'name': [_('Name cannot be blank.')]})
+
+    def test_serializer_with_blank_image_field(self):
+        self.menu_data['image'] = ''
+        serializer = MenuSerializer(data=self.menu_data)
+        with self.assertRaises(ValidationError) as context:
+            serializer.is_valid(raise_exception=True)
+        self.assertEqual(context.exception.detail, {'image': [_('Image cannot be blank.')]})
+
