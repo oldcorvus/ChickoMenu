@@ -1,4 +1,4 @@
-from ..models import  Category, MenuItem
+from ..models import  Category, Menu, MenuItem
 from rest_framework import serializers
 from rest_framework.validators import  BaseUniqueForValidator
 from utils.mixins import SetCustomErrorMessagesMixin
@@ -20,3 +20,11 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ( 'name' ,  'menu', 'menu_items',)
         read_only_fields = ('id',)
+
+class MenuDetailSerializer(serializers.ModelSerializer):
+    categories = CategorySerializer(many=True, read_only=True)
+  
+    class Meta:
+        model = Menu
+        fields = ( 'name', 'image', 'number_of_qrcodes', 'categories', 'code', 'telephone', 'phone', 'address')
+        read_only_fields = ('id','code', 'is_payed', 'is_active', 'owner')
