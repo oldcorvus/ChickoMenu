@@ -3,6 +3,11 @@ from utils.models import TimeStampedUUIDModel
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from theme.models import Theme
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
+
 
 User = get_user_model()
 
@@ -39,6 +44,7 @@ class Menu(TimeStampedUUIDModel):
         return f"{self.owner.username}/{self.name}"
 
 
+
 class Category(TimeStampedUUIDModel):
     menu = models.ForeignKey(
         Menu,
@@ -50,3 +56,53 @@ class Category(TimeStampedUUIDModel):
 
     def __str__(self):
         return f'{self.menu}/{self.name}'
+
+
+class MenuItem(TimeStampedUUIDModel):
+    menu = models.ForeignKey(
+        'Menu',
+        on_delete=models.CASCADE,
+        related_name='menu_items',
+        verbose_name=_('menu'),
+    )
+    category = models.ForeignKey(
+        'Category',
+        on_delete=models.CASCADE,
+        related_name='menu_items',
+        verbose_name=_('category'),
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'),
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name=_('description'),
+    )
+    price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_('price'),
+    )
+    discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=1,
+        verbose_name=_('discount'),
+    )
+    image = models.ImageField(
+        upload_to='menu_items/',
+        verbose_name=_('image'),
+    )
+    is_available = models.BooleanField(
+        default=True,
+        verbose_name=_('is available'),
+    )
+
+    class Meta:
+        verbose_name = _('menu item')
+        verbose_name_plural = _('menu items')
+
+    def __str__(self):
+        return f'{self.category}/{self.name}'
