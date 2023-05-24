@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from ..models import Menu
+from ..models import Menu, Category
 
 User = get_user_model()
 
@@ -86,3 +86,48 @@ class MenuModelTest(TestCase):
         user_menus = Menu.user_menus.get_queryset(user)
         self.assertIn(user_menu, user_menus)
         self.assertNotIn(other_user_menu, user_menus)
+
+    def test_menu_related_name(self):
+        category = Category.objects.create(
+            menu=self.test_menu,
+            name='Test Category',
+            emoji='😀'
+        )
+        self.assertIn(category, self.test_menu.categories.all())
+
+
+class CategoryModelTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass',
+        email="testemail@email.com", phone_number="09905150258")
+        self.menu = Menu.objects.create(
+            owner=self.user,
+            name='Test Menu',
+            image='test.jpg',
+            code=12345
+        )
+
+        
+    def test_category_creation(self):
+        category = Category.objects.create(
+            menu=self.menu,
+            name='Test Category',
+            emoji='🍔'
+        )
+        self.assertEqual(str(category), f'{self.menu}/{category.name}')
+
+    def test_category_emoji(self):
+        category = Category.objects.create(
+            menu=self.menu,
+            name='Test Category',
+            emoji='🍔'
+        )
+        self.assertEqual(category.emoji, '🍔')
+
+    def test_category_name_max_length(self):
+        category = Category.objects.create(
+            menu=self.menu,
+            name='x' * 255,
+            emoji='🍔'
+        )
+        self.assertEqual(len(category.name), 255)
