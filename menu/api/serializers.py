@@ -1,6 +1,5 @@
 from ..models import  Category, Menu, MenuItem
 from rest_framework import serializers
-from rest_framework.validators import  BaseUniqueForValidator
 from utils.mixins import SetCustomErrorMessagesMixin
 try:
     from django.utils.translation import ugettext_lazy as _
@@ -28,3 +27,32 @@ class MenuDetailSerializer(serializers.ModelSerializer):
         model = Menu
         fields = ( 'name', 'image', 'number_of_qrcodes', 'categories', 'code', 'telephone', 'phone', 'address')
         read_only_fields = ('id','code', 'is_payed', 'is_active', 'owner')
+
+class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
+    """Serializer for the menu object"""
+
+    class Meta:
+        model = Menu
+        fields = ('name', 'image')
+        read_only_fields = ('id','owner')
+
+        extra_kwargs = {
+        'name': {
+            'error_messages': {
+                'blank': _('Name cannot be blank.'),
+            },
+        },
+        'image': {
+            'error_messages': {
+                'blank': _('Image cannot be blank.'),
+            },
+        },
+    }
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        return super().update(instance, validated_data)
