@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-21 20:27+0200\n"
+"POT-Creation-Date: 2023-05-24 23:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,10 +67,90 @@ msgstr ""
 msgid "شماره تماس معتبر نیست حتما باید با ۰۹ شروع شود."
 msgstr ""
 
+#: accounts/api/views.py:45
+msgid "Code was sent successfully"
+msgstr ""
+
+#: accounts/api/views.py:47
+msgid "Code wasn't sent successfully"
+msgstr ""
+
+#: accounts/api/views.py:78
+msgid "status"
+msgstr ""
+
+#: accounts/api/views.py:78
+msgid "Account successfully created."
+msgstr ""
+
+#: accounts/api/views.py:84
+msgid "incorrect code"
+msgstr ""
+
+#: accounts/api/views.py:84
+msgid "The code entered is incorrect."
+msgstr ""
+
+#: accounts/api/views.py:91
+msgid "expired code"
+msgstr ""
+
+#: accounts/api/views.py:91
+msgid "The code has expired."
+msgstr ""
+
 #: accounts/models.py:36
 msgid "address"
 msgstr ""
 
 #: accounts/models.py:37
 msgid "post code"
+msgstr ""
+
+#: menu/api/serializers.py:42 menu/api/tests/test_serializers.py:151
+msgid "Name cannot be blank."
+msgstr ""
+
+#: menu/api/serializers.py:47 menu/api/tests/test_serializers.py:158
+msgid "Image cannot be blank."
+msgstr ""
+
+#: menu/models.py:66
+msgid "menu"
+msgstr ""
+
+#: menu/models.py:72
+msgid "category"
+msgstr ""
+
+#: menu/models.py:76
+msgid "name"
+msgstr ""
+
+#: menu/models.py:80
+msgid "description"
+msgstr ""
+
+#: menu/models.py:86
+msgid "price"
+msgstr ""
+
+#: menu/models.py:92
+msgid "discount"
+msgstr ""
+
+#: menu/models.py:96
+msgid "image"
+msgstr ""
+
+#: menu/models.py:100
+msgid "is available"
+msgstr ""
+
+#: menu/models.py:104
+msgid "menu item"
+msgstr ""
+
+#: menu/models.py:105
+msgid "menu items"
 msgstr ""
