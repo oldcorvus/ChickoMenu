@@ -1,5 +1,5 @@
 from django.test import TestCase
-from ..serializers import MenuItemSerializer, CategorySerializer
+from ..serializers import MenuItemSerializer,MenuDetailSerializer, CategorySerializer
 from menu.models import MenuItem, Menu, Category
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -84,3 +84,35 @@ class CategorySerializerTestCase(TestCase):
     def test_menu_field_content(self):
         data = self.serializer.data
         self.assertEqual(data['menu'], self.category_data['menu'].id)
+
+class MenuDetailSerializerTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.menu_data = {
+            'owner': self.user,
+            'name': 'My Menu',
+            'image': 'https://example.com/menu.jpg',
+            'number_of_qrcodes': 10,
+            'code': 13325,
+            'telephone': '+123456789',
+            'phone': '+123456789',
+            'address': '123 Main St',
+        }
+        self.menu = Menu.objects.create(**self.menu_data)
+        self.category_data = {
+            'name': 'Pizza',
+            'menu': self.menu,
+        }
+        self.category = Category.objects.create(**self.category_data)
+        self.serializer = MenuDetailSerializer(instance=self.menu)
+        self.category_serializer = CategorySerializer(instance=self.category)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(data.keys(), ['name', 'image', 'number_of_qrcodes', 'code', 'telephone', 'phone', 'address', 'categories'])
+
+    def test_name_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['name'], self.menu_data['name'])
