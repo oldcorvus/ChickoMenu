@@ -3,6 +3,7 @@ from utils.models import TimeStampedUUIDModel
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from theme.models import Theme
+
 User = get_user_model()
 
 class ActiveMenuManager(models.Manager):
@@ -36,3 +37,16 @@ class Menu(TimeStampedUUIDModel):
 
     def __str__(self):
         return f"{self.owner.username}/{self.name}"
+
+
+class Category(TimeStampedUUIDModel):
+    menu = models.ForeignKey(
+        Menu,
+        on_delete=models.CASCADE,
+        related_name='categories'
+    )
+    name = models.CharField(max_length=255)
+    emoji = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.menu}/{self.name}'
