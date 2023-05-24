@@ -11,5 +11,12 @@ except ImportError:
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
-        fields = ('id', 'name', 'description', 'price', 'discount', 'image', 'is_available', 'menu', 'category')
+        fields = ( 'name', 'description', 'price', 'discount', 'image', 'is_available', 'menu', 'category')
+        read_only_fields = ('id',)
 
+class CategorySerializer(serializers.ModelSerializer):
+    menu_items = MenuItemSerializer(many=True, read_only=True)
+    class Meta:
+        model = Category
+        fields = ( 'name' ,  'menu', 'menu_items',)
+        read_only_fields = ('id',)
