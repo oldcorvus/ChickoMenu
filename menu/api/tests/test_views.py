@@ -1,7 +1,7 @@
 from django.test import TestCase, RequestFactory
-from menu.models import Menu
+from menu.models import Menu,Category
 from ..views import ListOfAllActiveMenus
-from ..serializers import MenuSerializer
+from ..serializers import MenuSerializer,CategorySerializer,MenuDetailSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -127,4 +127,110 @@ class UserMenusTestCase(APITestCase):
 
         # Ensure no new menu was created
         self.assertFalse(Menu.objects.filter(name='').exists())
+
+
+
+class MenuDetailTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.menu_data = {
+            'owner': self.user,
+            'name': 'My Menu',
+            'image': 'https://example.com/menu.jpg',
+            'number_of_qrcodes': 10,
+            'code': 13325,
+            'telephone': '+123456789',
+            'phone': '+123456789',
+            'address': '123 Main St',
+        }
+        self.token = Token.objects.create(user=self.user)
+
+        self.menu = Menu.objects.create(**self.menu_data)
+
+    def test_get_menu_detail(self):
+        # Authenticate the user
+        self.client.force_authenticate(user=self.user, token = self.token)
+
+        # Make a GET request to the menu detail URL
+        url = reverse('menu:menu_detail', args=[self.menu.pk])
+        response = self.client.get(url)
+
+        # Ensure the response status code is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Ensure the response data matches the serialized menu instance
+        serializer = MenuDetailSerializer(instance=self.menu)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_update_menu_detail(self):
+        # Authenticate the user
+        self.client.force_authenticate(user=self.user, token = self.token)
+
+        # Define the data to update the menu
+        updated_data = {'name': 'New Name', 'image':"new.jpg"}
+
+        # Make a PUT request to the menu detailURL
+        url = reverse('menu:menu_detail', args=[self.menu.pk])
+        response = self.client.put(url, updated_data)
+
+        # Ensure the response status code is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Refresh the menu instance from the database
+        self.menu.refresh_from_db()
+
+        # Ensure the menu instance was updated with the new data
+        self.assertEqual(self.menu.name, updated_data['name'])
+
+    def test_delete_menu_detail(self):
+        # Authenticate the user
+        self.client.force_authenticate(user=self.user, token = self.token)
+
+        # Make a DELETE request to the menu detail URL
+        url = reverse('menu:menu_detail', args=[self.menu.pk])
+        response = self.client.delete(url)
+
+        # Ensure the response status code is 204 NO CONTENT
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Ensure the menu instance was deleted
+        self.assertFalse(Menu.objects.filter(pk=self.menu.pk).exists())
+
+    def test_get_menu_detail_unauthenticated(self):
+        # Make a GET request to the menu detail URL without authentication
+        url = reverse('menu:menu_detail', args=[self.menu.pk])
+        response = self.client.get(url)
+
+        # Ensure the response status code is 401 UNAUTHORIZED
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_menu_detail_unauthenticated(self):
+        # Define the data to update the menu
+        updated_data = {'name': 'New Name'}
+
+        # Make a PUT request to the menu detail URL without authentication
+        url = reverse('menu:menu_detail', args=[self.menu.pk])
+        response = self.client.put(url, updated_data)
+
+        # Ensure the response status code is 401 UNAUTHORIZED
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Refresh the menu instance from the database
+        self.menu.refresh_from_db()
+
+        # Ensure the menu instance was not updated with the new data
+        self.assertNotEqual(self.menu.name, updated_data['name'])
+
+    def test_delete_menu_detail_unauthenticated(self):
+        # Make a DELETE request to the menu detail URL without authentication
+        url = reverse('menu:menu_detail', args=[self.menu.pk])
+        response = self.client.delete(url)
+
+        # Ensure the response status code is 401 UNAUTHORIZED
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Ensure the menu instance was not deleted
+        self.assertTrue(Menu.objects.filter(pk=self.menu.pk).exists())
+
 
