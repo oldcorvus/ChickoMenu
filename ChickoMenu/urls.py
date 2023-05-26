@@ -44,4 +44,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path('theme/', include('theme.api.urls', namespace='theme')),
     path('account/', include('accounts.api.urls', namespace='account')),
+    path('menu/', include('menu.api.urls', namespace='menu')),
+
 ]
