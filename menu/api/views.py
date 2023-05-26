@@ -11,6 +11,8 @@ from .serializers import (
     MenuItemSerializer,
     MenuSerializer,
 )
+from django.shortcuts import get_object_or_404
+
 from .permissions import IsOwnerOrReadOnly, MenuOwnerOrReadOnly
 from .utils import get_code
 
@@ -33,3 +35,11 @@ class UserMenus(ListCreateAPIView):
     def perform_create(self, serializer):
         code = get_code()
         serializer.save(owner=self.request.user, code=code)
+
+
+class MenuDetail(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
+    serializer_class = MenuDetailSerializer
+
+    def get_object(self):
+        return get_object_or_404(Menu, pk=self.kwargs['pk'])
