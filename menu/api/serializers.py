@@ -25,7 +25,7 @@ class MenuDetailSerializer(serializers.ModelSerializer):
   
     class Meta:
         model = Menu
-        fields = ( 'name', 'image', 'number_of_qrcodes', 'categories', 'code', 'telephone', 'phone', 'address')
+        fields = ( 'name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
         read_only_fields = ('id','code', 'is_payed', 'is_active', 'owner')
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
