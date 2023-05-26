@@ -119,7 +119,7 @@ class MenuDetailSerializerTestCase(TestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertCountEqual(data.keys(), ['name', 'image', 'number_of_qrcodes', 'code', 'telephone', 'phone', 'address', 'categories'])
+        self.assertCountEqual(data.keys(), ['name', 'image', 'number_of_qrcodes', 'telephone', 'phone', 'address', 'categories'])
 
     def test_name_field_content(self):
         data = self.serializer.data
