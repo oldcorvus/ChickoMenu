@@ -233,4 +233,75 @@ class MenuDetailTestCase(APITestCase):
         # Ensure the menu instance was not deleted
         self.assertTrue(Menu.objects.filter(pk=self.menu.pk).exists())
 
+class CategoryDetailTests(APITestCase):
+    def setUp(self):
+        self.user1 = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.user2 = User.objects.create(username="testuser2", first_name="Test", last_name="User",
+                                        phone_number="1234678490", email="testuser2@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.token = Token.objects.create(user=self.user1)
+        self.menu1 = Menu.objects.create(name='Test Menu 1', owner=self.user1)
+        self.menu2 = Menu.objects.create(name='Test Menu 2', owner=self.user2 ,code =235)
+        self.category1 = Category.objects.create(name='Category 1', menu=self.menu1)
+        self.category2 = Category.objects.create(name='Category 2', menu=self.menu2)
 
+    def test_retrieve_category(self):
+        # Test that an authenticated user can retrieve a category from their own menu
+        url = reverse('menu:category-detail', kwargs={'pk': self.category1.pk})
+        self.client.force_authenticate(self.user1)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, CategorySerializer(self.category1).data)
+
+        # Test that an unauthenticated user cannot retrieve a category
+        self.client.logout()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_category(self):
+        # Test that an authenticated user can update a category in their own menu
+        url = reverse('menu:category-detail', kwargs={'pk': self.category1.pk})
+        data = {'name': 'Updated Category 1'}
+        self.client.force_authenticate(self.user1, token= self.token)
+        response = self.client.patch(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.category1.refresh_from_db()
+        self.assertEqual(self.category1.name, data['name'])
+
+        # Test that an authenticated user cannot update a category in another user's menu
+        url = reverse('menu:category-detail', kwargs={'pk': self.category2.pk})
+        data = {'name': 'Updated Category 2'}
+        response = self.client.patch(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.category2.refresh_from_db()
+        self.assertNotEqual(self.category2.name, data['name'])
+
+        # Test that an unauthenticated user cannot update a category
+
+        self.client.logout()
+        response = self.client.patch(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.category1.refresh_from_db()
+        self.assertNotEqual(self.category1.name, data['name'])
+
+    def test_delete_category(self):
+        # Test that an authenticated user can delete a category from their own menu
+        url = reverse('menu:category-detail', kwargs={'pk': self.category1.pk})
+        self.client.force_authenticate(self.user1,token= self.token)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Category.objects.filter(pk=self.category1.pk).exists())
+
+        # Test that an authenticated user cannot delete a category from another user's menu
+        url = reverse('menu:category-detail', kwargs={'pk': self.category2.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertTrue(Category.objects.filter(pk=self.category2.pk).exists())
+
+        # Test that an unauthenticated user cannot delete a category
+        self.client.logout()
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue(Category.objects.filter(pk=self.category2.pk).exists())
