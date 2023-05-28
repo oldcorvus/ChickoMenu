@@ -1,7 +1,7 @@
 from django.test import TestCase, RequestFactory
-from menu.models import Menu,Category
+from menu.models import Menu,Category, MenuItem
 from ..views import ListOfAllActiveMenus
-from ..serializers import MenuSerializer,CategorySerializer,MenuDetailSerializer
+from ..serializers import MenuSerializer,CategorySerializer,MenuDetailSerializer,MenuItemSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -263,7 +263,7 @@ class CategoryDetailTests(APITestCase):
     def test_update_category(self):
         # Test that an authenticated user can update a category in their own menu
         url = reverse('menu:category-detail', kwargs={'pk': self.category1.pk})
-        data = {'name': 'Updated Category 1'}
+        data = {'name': 'Updated Category 1','category_pk':self.category1.pk}
         self.client.force_authenticate(self.user1, token= self.token)
         response = self.client.patch(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -272,7 +272,7 @@ class CategoryDetailTests(APITestCase):
 
         # Test that an authenticated user cannot update a category in another user's menu
         url = reverse('menu:category-detail', kwargs={'pk': self.category2.pk})
-        data = {'name': 'Updated Category 2'}
+        data = {'name': 'Updated Category 2', 'category_pk':self.category2.pk}
         response = self.client.patch(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.category2.refresh_from_db()
@@ -290,7 +290,7 @@ class CategoryDetailTests(APITestCase):
         # Test that an authenticated user can delete a category from their own menu
         url = reverse('menu:category-detail', kwargs={'pk': self.category1.pk})
         self.client.force_authenticate(self.user1,token= self.token)
-        response = self.client.delete(url)
+        response = self.client.delete(url, data ={'category_pk':self.category1.pk})
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Category.objects.filter(pk=self.category1.pk).exists())
 
@@ -305,3 +305,75 @@ class CategoryDetailTests(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertTrue(Category.objects.filter(pk=self.category2.pk).exists())
+
+
+
+
+
+class MenuItemDetailTestCase(APITestCase):
+    
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.menu = Menu.objects.create(name='Test Menu 1', owner=self.user)
+        self.category = Category.objects.create(name='Category 1', menu=self.menu)
+        self.menu_item = MenuItem.objects.create(pk= 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fdd',name='Test Item',menu=self.menu, category = self.category, description='Test Description', price=10.0)
+        self.url = reverse('menu:menu-item-detail', kwargs={'pk': self.menu_item.pk})
+        self.token = Token.objects.create(user=self.user)
+        self.client.force_authenticate(user=self.user, token= self.token)
+
+    def test_retrieve_menu_item(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = MenuItemSerializer(self.menu_item).data
+        self.assertEqual(response.data, expected_data)
+
+    def test_update_menu_item(self):
+        data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 20.0,'menu_item_pk': self.menu_item.pk}
+        self.client.force_authenticate(user=self.user, token= self.token)
+        response = self.client.patch(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.menu_item.refresh_from_db()
+        self.assertEqual(self.menu_item.name, data['name'])
+        self.assertEqual(self.menu_item.description, data['description'])
+        self.assertEqual(self.menu_item.price, data['price'])
+
+    def test_delete_menu_item(self):
+        response = self.client.delete(self.url, data={'menu_item_pk': self.menu_item.pk})
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(MenuItem.objects.filter(pk=self.menu_item.pk).exists())
+
+    def test_retrieve_nonexistent_menu_item(self):
+        url = reverse('menu:menu-item-detail', kwargs={'pk': '541abe7f-2419-482f-941b-941e72e6a23a'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_nonexistent_menu_item(self):
+        url = reverse('menu:menu-item-detail', kwargs={'pk': '541abe7f-2419-482f-941b-941e72e6a23a'})
+        data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 20.0}
+        response = self.client.patch(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_nonexistent_menu_item(self):
+        url = reverse('menu:menu-item-detail', kwargs={'pk': '541abe7f-2419-482f-941b-941e72e6a23a'})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_unauthorized_request(self):
+        data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 20.0,'menu_item_pk': self.menu_item.pk}
+
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_menu_item_owned_by_another_user(self):
+        data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 20.0,'menu_item_pk': self.menu_item.pk}
+
+        another_user = User.objects.create(username="testuser2", first_name="Test", last_name="User",
+                                        phone_number="1234267890", email="testuser2@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.menu_item.menu.owner = another_user
+        self.menu_item.menu.save()
+        response = self.client.patch(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
