@@ -47,5 +47,13 @@ class MenuDetail(RetrieveUpdateDestroyAPIView):
 class CategoryDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, MenuOwnerOrReadOnly]
     serializer_class = CategorySerializer
+
     def get_object(self):
         return get_object_or_404(Category, pk=self.kwargs['pk'])
+
+class MenuItemDetail(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated, MenuOwnerOrReadOnly]
+    serializer_class = MenuItemSerializer
+    
+    def get_object(self):
+        return get_object_or_404(MenuItem, pk=self.kwargs['pk'])
