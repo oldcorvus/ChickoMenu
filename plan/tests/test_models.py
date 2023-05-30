@@ -52,3 +52,25 @@ class PlanModelTest(TestCase):
     def test_plan_item_str(self):
         plan_item = PlanItem.objects.get(id=self.plan_item1.id)
         self.assertEqual(str(self.plan_item1), 'Item 1')
+
+
+class PlanItemModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        cls.plan_item = PlanItem.objects.create(
+            name='Item 1',
+            description='This is item 1'
+        )
+
+    def test_plan_item_name(self):
+        plan_item = PlanItem.objects.get(id=self.plan_item.id)
+        self.assertEqual(plan_item.name, 'Item 1')
+
+    def test_plan_item_description(self):
+        plan_item = PlanItem.objects.get(id=self.plan_item.id)
+        self.assertEqual(plan_item.description, 'This is item 1')
+
+    def test_plan_item_str(self):
+        plan_item = PlanItem.objects.get(id=self.plan_item.id)
+        self.assertEqual(str(plan_item), 'Item 1')
