@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "theme.apps.ThemeConfig",
     "menu.apps.MenuConfig",
+    "plan.apps.PlanConfig",
 
 
 ]
