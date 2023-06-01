@@ -7,3 +7,8 @@ class PlanViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Plan.objects.prefetch_related('features').all()
     serializer_class = PlanSerializer
+
+class PlanItemViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = PlanItem.objects.all()
+    serializer_class = PlanItemSerializer
