@@ -37,13 +37,14 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
     path('auth/', include('djoser.urls.authtoken')),
     path('theme/', include('theme.api.urls', namespace='theme')),
     path('account/', include('accounts.api.urls', namespace='account')),
     path('menu/', include('menu.api.urls', namespace='menu')),
+    path('plan/', include('plan.api.urls', namespace='plan')),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
 
 ]
