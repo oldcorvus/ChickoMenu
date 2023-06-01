@@ -87,3 +87,48 @@ class PlanSerializerTest(TestCase):
         self.assertEqual(feature1.description, 'This is feature 1')
         self.assertEqual(feature2.name, 'Feature 2')
         self.assertEqual(feature2.description, 'This is feature 2')
+
+
+
+
+class PlanItemSerializerTestCase(TestCase):
+    def setUp(self):
+        self.plan_item_data = {
+            'name': 'Plan Item 1',
+            'description': 'Description for Plan Item 1',
+        }
+        self.plan_item = PlanItem.objects.create(**self.plan_item_data)
+        self.serializer = PlanItemSerializer(instance=self.plan_item)
+
+    def test_serializer_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(data.keys(), ['name', 'description'])
+
+    def test_name_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['name'], self.plan_item_data['name'])
+
+    def test_description_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['description'], self.plan_item_data['description'])
+
+    def test_id_field_read_only(self):
+        data = {'name': 'New Plan', 'description': 'This is a new plan',  'id': self.id}
+        serializer = PlanItemSerializer(instance=self.plan_item, data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        self.assertEqual(self.plan_item.name, serializer.data['name'])
+        self.assertEqual(self.plan_item.description, serializer.data['description'])
+        self.assertNotEqual(self.plan_item.id, data['id'])
+
+    def test_create_plan_item(self):
+        new_plan_item_data = {
+            'name': 'Plan Item 2',
+            'description': 'Description for Plan Item 2',
+        }
+        serializer = PlanItemSerializer(data=new_plan_item_data)
+        self.assertTrue(serializer.is_valid())
+        self.plan_item = serializer.save()
+        plan_item = PlanItem.objects.get(id=self.plan_item.id)
+        self.assertEqual(plan_item.name, new_plan_item_data['name'])
+        self.assertEqual(plan_item.description, new_plan_item_data['description'])
