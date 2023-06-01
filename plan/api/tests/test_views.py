@@ -94,3 +94,69 @@ class PlanViewSetTest(APITestCase):
         url = reverse('plan:plan-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+class PlanItemViewSetTest(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        self.plan_item1 = PlanItem.objects.create(
+        name='Feature 1',
+        description='This is feature 1'
+        )
+        self.plan_item2 = PlanItem.objects.create(
+        name='Feature 2',
+        description='This is feature 2'
+        )
+
+
+    def test_plan_item_list(self):
+        url = reverse('plan:planitem-list')
+        response = self.client.get(url)
+        plan_items = PlanItem.objects.all()
+        serializer = PlanItemSerializer(plan_items, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_plan_item_detail(self):
+        url = reverse('plan:planitem-detail', args=[self.plan_item1.id])
+        response = self.client.get(url)
+        plan_item = PlanItem.objects.get(id=self.plan_item1.id)
+        serializer = PlanItemSerializer(plan_item)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
+
+    def test_plan_item_create(self):
+        url = reverse('plan:planitem-list')
+        data = {
+            'name': 'Feature 3',
+            'description': 'This is feature 3'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(PlanItem.objects.count(), 3)
+        self.assertEqual(PlanItem.objects.get(name='Feature 3').name, 'Feature 3')
+
+    def test_plan_item_update(self):
+        url = reverse('plan:planitem-detail', args=[self.plan_item1.id])
+        data = {
+            'name': 'Feature 1 Plus',
+            'description': 'This is feature 1 plus'
+        }
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(PlanItem.objects.get(id=self.plan_item1.id).name, 'Feature 1 Plus')
+        self.assertEqual(PlanItem.objects.get(id=self.plan_item1.id).description, 'This is feature 1 plus')
+
+    def test_plan_item_delete(self):
+            url = reverse('plan:planitem-detail', args=[self.plan_item1.id])
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+            self.assertFalse(PlanItem.objects.filter(id=self.plan_item1.id).exists())
+            self.assertTrue(PlanItem.objects.filter(id=self.plan_item2.id).exists())
+
