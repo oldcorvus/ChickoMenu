@@ -4,6 +4,7 @@ from plan.api.views import PlanViewSet, PlanItemViewSet
 
 router = DefaultRouter()
 router.register(r'plans', PlanViewSet, basename='plan')
+router.register(r'planitems', PlanItemViewSet, basename='planitem')
 
 app_name = "plan"
 
