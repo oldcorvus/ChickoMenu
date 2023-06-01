@@ -12,3 +12,4 @@ class PlanItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = PlanItem.objects.all()
     serializer_class = PlanItemSerializer
+

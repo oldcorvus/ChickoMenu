@@ -12,6 +12,7 @@ try:
 except ImportError:
     from django.utils.translation import gettext_lazy as _
 
+from plan.models import UserPlan, Plan
 
 def upload_location(instance, filename):
     return f"UserProfiles/{instance.username.lower()}/{get_random_str(10, 50)}.jpg"
@@ -35,7 +36,7 @@ class User(AbstractUser):
                                       null=True, blank=True)
     address = models.TextField(max_length=420, null=True, blank=True, verbose_name=_('address'))
     post_code = models.PositiveBigIntegerField(null=True, blank=True, verbose_name=_('post code'))
-
+    plans = models.ManyToManyField(Plan, through=UserPlan)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -62,6 +63,17 @@ class User(AbstractUser):
     def get_absolute_url(self):
         return reverse('accounts:user-profile', args=(self.username,))
 
+    def get_active_plan(self):
+        return self.userplan_set.filter(is_active=True).first()
+
+    def activate_plan(self, plan):
+        user_plan = UserPlan.objects.get(user=self, plan=plan)
+        user_plan.activate()
+
+    def deactivate_active_plan(self):
+        active_plan = self.get_active_plan()
+        if active_plan:
+            active_plan.deactivate()
 
 class SMSVerification(TimeStampedUUIDModel):
     security_code = models.CharField(max_length=120)
