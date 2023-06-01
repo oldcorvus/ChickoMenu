@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-
+from django.utils import timezone
 
 class UUIDModel(models.Model):
     """ An abstract base class model that makes primary key `id` as UUID
@@ -18,7 +18,7 @@ class TimeStampedUUIDModel(UUIDModel):
     ``created`` and ``modified`` fields with UUID as primary_key field.
     """
 
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, null=True, blank=True)
     modified_at = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
