@@ -62,10 +62,10 @@ DJOSER = {
         "your redirect url",
     ],
     "SERIALIZERS": {
-        "user_create": "accounts.serializers.UserSerializer",  # custom serializer
-        "user": "djoser.serializers.UserSerializer",
-        "current_user": "djoser.serializers.UserSerializer",
-        "user_delete": "djoser.serializers.UserSerializer",
+        "user_create": "accounts.api.serializers.UserSerializer", # custom serializer
+        "user": "accounts.api.serializers.UserSerializer",
+        "current_user":"accounts.api.serializers.UserSerializer",
+        "user_delete": "accounts.api.serializers.UserSerializer",
     },
 }
 
