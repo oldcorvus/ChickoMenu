@@ -1,5 +1,8 @@
 from django.test import TestCase
-from plan.models import Plan, PlanItem
+from plan.models import Plan, PlanItem, UserPlan
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class PlanModelTest(TestCase):
     @classmethod
@@ -74,3 +77,51 @@ class PlanItemModelTest(TestCase):
     def test_plan_item_str(self):
         plan_item = PlanItem.objects.get(id=self.plan_item.id)
         self.assertEqual(str(plan_item), 'Item 1')
+
+
+
+
+
+class UserPlanTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+
+        self.plan = Plan.objects.create(name='Basic', price=10.00)
+        self.plan2 = Plan.objects.create(name='Pro', price=100.00)
+
+    def test_user_plan_creation(self):
+        user_plan = UserPlan.objects.create(user=self.user, plan=self.plan)
+        self.assertIsInstance(user_plan, UserPlan)
+        self.assertEqual(user_plan.user, self.user)
+        self.assertEqual(user_plan.plan, self.plan)
+
+    def test_user_plan_activation(self):
+        user_plan = UserPlan.objects.create(user=self.user, plan=self.plan)
+        user_plan.activate()
+        self.assertTrue(user_plan.is_active)
+        self.assertIsNone(user_plan.end_date)
+
+    def test_user_plan_deactivation(self):
+        user_plan = UserPlan.objects.create(user=self.user, plan=self.plan)
+        user_plan.activate()
+        user_plan.deactivate()
+        self.assertFalse(user_plan.is_active)
+        self.assertIsNotNone(user_plan.end_date)
+
+    def test_user_plan_activate_with_active_plan(self):
+        user_plan1 = UserPlan.objects.create(user=self.user, plan=self.plan)
+        user_plan2 = UserPlan.objects.create(user=self.user, plan=self.plan2)
+        user_plan1.activate()
+        user_plan2.activate()
+        user_plan1.refresh_from_db()
+        user_plan2.refresh_from_db()
+
+        self.assertFalse(user_plan1.is_active)
+        self.assertTrue(user_plan2.is_active)
+
+    def test_user_plan_unique_together(self):
+        UserPlan.objects.create(user=self.user, plan=self.plan)
+        with self.assertRaises(Exception):
+            UserPlan.objects.create(user=self.user, plan=self.plan)

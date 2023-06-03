@@ -61,10 +61,10 @@ class PlanSerializerTest(TestCase):
         self.assertEqual(plan.description, data['description'])
         self.assertEqual(plan.price, data['price'])
         self.assertEqual(plan.features.count(), 2)
+        features = plan.features.order_by('name')
 
-        feature1 = plan.features.first()
-        feature2 = plan.features.last()
-
+        feature1 = features.first()
+        feature2 = features.last()
         self.assertEqual(feature1.name, 'Feature 1')
         self.assertEqual(feature1.description, 'This is feature 1')
         self.assertEqual(feature2.name, 'Feature 2')
@@ -79,10 +79,10 @@ class PlanSerializerTest(TestCase):
         self.assertEqual(plan.name, data['name'])
         self.assertEqual(plan.description, data['description'])
         self.assertEqual(plan.features.count(), 2)
+        features = plan.features.order_by('name')
 
-        feature1 = plan.features.first()
-        feature2 = plan.features.last()
-
+        feature1 = features.first()
+        feature2 = features.last()
         self.assertEqual(feature1.name, 'Feature 1')
         self.assertEqual(feature1.description, 'This is feature 1')
         self.assertEqual(feature2.name, 'Feature 2')
