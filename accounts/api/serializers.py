@@ -10,12 +10,13 @@ from django.core.exceptions import ValidationError
 
 class UserSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the users object"""
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'username', 'phone_number',
+        fields = ('id','email', 'password', 'username', 'phone_number',
                   'first_name', 'last_name', 'profile_image')
-        read_only_fields = ("id",)
+                  
         extra_kwargs = {
             'username': {"error_messages": {"blank": _("Username cannot be blank.")}},
             'password': {"error_messages": {"blank": _("Password cannot be blank.")}},

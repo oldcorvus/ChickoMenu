@@ -8,40 +8,47 @@ except ImportError:
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = MenuItem
-        fields = ( 'name', 'description', 'price', 'discount', 'image', 'is_available', 'menu', 'category')
-        read_only_fields = ('id',)
+        fields = ('id', 'name', 'description', 'price', 'discount', 'image', 'is_available', 'menu', 'category')
 
 class CategorySerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True)
     number_of_items = serializers.SerializerMethodField()
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Category
-        fields = ( 'name' ,  'menu', 'menu_items','number_of_items')
-        read_only_fields = ('id',)
+        fields = ( 'id','name' ,  'menu', 'menu_items','number_of_items')
 
     def get_number_of_items(self, obj):
         return obj.menu_items.count()
 
 class MenuDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
-  
+    id = serializers.ReadOnlyField()
+    owner = serializers.ReadOnlyField()
+    code  = serializers.ReadOnlyField()
+    is_payed = serializers.ReadOnlyField()
+    is_active = serializers.ReadOnlyField()
+
     class Meta:
         model = Menu
-        fields = ( 'name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
-        read_only_fields = ('id','code', 'is_payed', 'is_active', 'owner')
+        fields = ( 'id','owner','code','is_payed','is_active','name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""
     number_of_categories = serializers.SerializerMethodField()
     number_of_items = serializers.SerializerMethodField()
+    id = serializers.ReadOnlyField()
+    owner = serializers.ReadOnlyField()
 
     class Meta:
         model = Menu
-        fields = ('name', 'image' , 'number_of_items' , 'number_of_categories')
-        read_only_fields = ('id','owner')
+        fields = ('id','owner',' name', 'image' , 'number_of_items' , 'number_of_categories')
+        
 
         extra_kwargs = {
         'name': {

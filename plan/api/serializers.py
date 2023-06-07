@@ -2,18 +2,19 @@ from rest_framework import serializers
 from plan.models import Plan, PlanItem
 
 class PlanItemSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = PlanItem
-        fields = ( 'name', 'description')
-        read_only_fields = ("id",)
+        fields = ('id', 'name', 'description')
 
 class PlanSerializer(serializers.ModelSerializer):
     features = PlanItemSerializer(many=True, required = False, allow_null=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Plan
         fields = ('id', 'name', 'description', 'price', 'features')
-        read_only_fields = ('id',)
 
     def create(self, validated_data):
         # Create a new Plan instance
