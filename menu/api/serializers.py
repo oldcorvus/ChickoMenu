@@ -15,10 +15,15 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True)
+    number_of_items = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
-        fields = ( 'name' ,  'menu', 'menu_items',)
+        fields = ( 'name' ,  'menu', 'menu_items','number_of_items')
         read_only_fields = ('id',)
+
+    def get_number_of_items(self, obj):
+        return obj.menu_items.count
 
 class MenuDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
@@ -30,10 +35,12 @@ class MenuDetailSerializer(serializers.ModelSerializer):
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""
+    number_of_categories = serializers.SerializerMethodField()
+    number_of_items = serializers.SerializerMethodField()
 
     class Meta:
         model = Menu
-        fields = ('name', 'image')
+        fields = ('name', 'image' , 'number_of_items' , 'number_of_categories')
         read_only_fields = ('id','owner')
 
         extra_kwargs = {
@@ -48,6 +55,11 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
             },
         },
     }
+    def get_number_of_categories(self, obj):
+        return obj.categories.count()
+    
+    def get_number_of_items(self, obj):
+        return sum([category.menu_items.count() for category in obj.categories])
 
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user
