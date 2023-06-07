@@ -49,7 +49,8 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
                 'blank': _('Name cannot be blank.'),
             },
         },
-        'image': {
+        'image': {   
+            'required': False,
             'error_messages': {
                 'blank': _('Image cannot be blank.'),
             },
