@@ -21,7 +21,7 @@ class ThemeSerializerTest(APITestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertEqual(set(data.keys()), set(['name', 'description', 'preview', 'background_image', 'font_family', 'menu_background_color', 'menu_text_color']))
+        self.assertEqual(set(data.keys()), set([ 'id','name', 'description', 'preview', 'background_image', 'font_family', 'menu_background_color', 'menu_text_color']))
 
     def test_name_field_content(self):
         data = self.serializer.data

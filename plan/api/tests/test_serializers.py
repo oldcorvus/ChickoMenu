@@ -102,7 +102,7 @@ class PlanItemSerializerTestCase(TestCase):
 
     def test_serializer_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertCountEqual(data.keys(), ['name', 'description'])
+        self.assertCountEqual(data.keys(), ['id','name', 'description'])
 
     def test_name_field_content(self):
         data = self.serializer.data

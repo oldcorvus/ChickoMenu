@@ -74,13 +74,13 @@ class UserMenusTestCase(APITestCase):
             'telephone': '+123456789',
             'phone': '+123456789',
             'address': '123 Main St',
+            'owner': self.user,
         }
 
         # Make a POST request to the user_menus URL with the My Menu data
         url = reverse('menu:user_menus')
         self.client.force_authenticate(user=self.user, token=self.token)
         response = self.client.post(url, new_menu_data)
-
         # Ensure the response status code is 201 CREATED
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -174,7 +174,6 @@ class MenuDetailTestCase(APITestCase):
         # Make a PUT request to the menu detailURL
         url = reverse('menu:menu_detail', args=[self.menu.pk])
         response = self.client.put(url, updated_data)
-
         # Ensure the response status code is 200 OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Refresh the menu instance from the database
@@ -327,6 +326,9 @@ class MenuItemDetailTestCase(APITestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = MenuItemSerializer(self.menu_item).data
+        # Convert the UUID object to a string in the response data
+        response_data = response.data
+        response_data['id'] = str(response_data['id'])
         self.assertEqual(response.data, expected_data)
 
     def test_update_menu_item(self):

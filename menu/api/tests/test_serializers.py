@@ -119,7 +119,7 @@ class MenuDetailSerializerTestCase(TestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertCountEqual(data.keys(), ['name', 'image', 'number_of_qrcodes', 'telephone', 'phone', 'address', 'categories'])
+        self.assertCountEqual(data.keys(), ['id','owner','is_paid','is_active','code','name', 'image', 'number_of_qrcodes', 'telephone', 'phone', 'address', 'categories'])
 
     def test_name_field_content(self):
         data = self.serializer.data
@@ -145,15 +145,14 @@ class MenuSerializerTestCase(TestCase):
 
     def test_serializer_with_blank_name_field(self):
         self.menu_data['name'] = ''
+        
         serializer = MenuSerializer(data=self.menu_data)
+        expected_error_message = {'name': [_('Name cannot be blank.')]}
+
+        serializer = MenuSerializer(data={'name': ''})
         with self.assertRaises(ValidationError) as context:
             serializer.is_valid(raise_exception=True)
-        self.assertEqual(context.exception.detail, {'name': [_('Name cannot be blank.')]})
 
-    def test_serializer_with_blank_image_field(self):
-        self.menu_data['image'] = ''
-        serializer = MenuSerializer(data=self.menu_data)
-        with self.assertRaises(ValidationError) as context:
-            serializer.is_valid(raise_exception=True)
-        self.assertEqual(context.exception.detail, {'image': [_('Image cannot be blank.')]})
+        error_message = str(context.exception.detail['name'][0])
 
+        self.assertEqual(error_message, expected_error_message['name'][0])

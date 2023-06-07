@@ -6,6 +6,7 @@ try:
 except ImportError:
     from django.utils.translation import gettext_lazy as _
 
+from  accounts.api.serializers import UserSerializer
 
 class MenuItemSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
@@ -29,25 +30,24 @@ class CategorySerializer(serializers.ModelSerializer):
 class MenuDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
     id = serializers.ReadOnlyField()
-    owner = serializers.ReadOnlyField()
     code  = serializers.ReadOnlyField()
-    is_payed = serializers.ReadOnlyField()
+    is_paid = serializers.ReadOnlyField()
     is_active = serializers.ReadOnlyField()
-
+    owner = UserSerializer(read_only=True)
+    
     class Meta:
         model = Menu
-        fields = ( 'id','owner','code','is_payed','is_active','name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
+        fields = ( 'id','owner','code','is_paid','is_active','name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""
     number_of_categories = serializers.SerializerMethodField()
     number_of_items = serializers.SerializerMethodField()
     id = serializers.ReadOnlyField()
-    owner = serializers.ReadOnlyField()
 
     class Meta:
         model = Menu
-        fields = ('id','owner',' name', 'image' , 'number_of_items' , 'number_of_categories')
+        fields = ('id','name', 'image' , 'number_of_items' , 'number_of_categories')
         
 
         extra_kwargs = {
