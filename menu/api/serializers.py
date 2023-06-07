@@ -23,7 +23,7 @@ class CategorySerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
     def get_number_of_items(self, obj):
-        return obj.menu_items.count
+        return obj.menu_items.count()
 
 class MenuDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
@@ -57,9 +57,10 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     }
     def get_number_of_categories(self, obj):
         return obj.categories.count()
-    
+        
     def get_number_of_items(self, obj):
-        return sum([category.menu_items.count() for category in obj.categories])
+        categories = obj.categories.all()
+        return  sum(category.menu_items.count() for category in categories)
 
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user
