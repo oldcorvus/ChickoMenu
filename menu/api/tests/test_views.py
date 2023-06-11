@@ -138,6 +138,7 @@ class MenuDetailTestCase(APITestCase):
         self.menu_data = {
             'owner': self.user,
             'name': 'My Menu',
+            'description': 'My Menu Description',
             'image': 'https://example.com/menu.jpg',
             'number_of_qrcodes': 10,
             'code': 13325,
@@ -164,6 +165,10 @@ class MenuDetailTestCase(APITestCase):
         serializer = MenuDetailSerializer(instance=self.menu)
         self.assertEqual(response.data, serializer.data)
 
+        # Ensure the response data includes the description field
+        self.assertIn('description', response.data)
+        self.assertEqual(response.data['description'], self.menu_data['description'])
+
     def test_update_menu_detail(self):
         # Authenticate the user
         self.client.force_authenticate(user=self.user, token = self.token)
@@ -171,11 +176,13 @@ class MenuDetailTestCase(APITestCase):
         # Define the data to update the menu
         updated_data = {'name': 'New Name', 'image':"new.jpg"}
 
-        # Make a PUT request to the menu detailURL
+        # Make a PUT request to the menu detail URL
         url = reverse('menu:menu_detail', args=[self.menu.pk])
         response = self.client.put(url, updated_data)
+
         # Ensure the response status code is 200 OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         # Refresh the menu instance from the database
         self.menu.refresh_from_db()
 
@@ -231,7 +238,7 @@ class MenuDetailTestCase(APITestCase):
 
         # Ensure the menu instance was not deleted
         self.assertTrue(Menu.objects.filter(pk=self.menu.pk).exists())
-
+        
 class CategoryDetailTests(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create(username="testuser", first_name="Test", last_name="User",
