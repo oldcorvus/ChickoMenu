@@ -101,6 +101,7 @@ class MenuDetailSerializerTestCase(TestCase):
         self.menu_data = {
             'owner': self.user,
             'name': 'My Menu',
+            'description': 'My Menu Description',
             'image': 'https://example.com/menu.jpg',
             'number_of_qrcodes': 10,
             'code': 13325,
@@ -119,12 +120,10 @@ class MenuDetailSerializerTestCase(TestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertCountEqual(data.keys(), ['id','owner','is_paid','is_active','code','name', 'image', 'number_of_qrcodes', 'telephone', 'phone', 'address', 'categories'])
-
-    def test_name_field_content(self):
-        data = self.serializer.data
+        self.assertCountEqual(data.keys(), ['id', 'theme', 'description', 'owner', 'code', 'is_paid', 'is_active', 'name', 'image', 'number_of_qrcodes', 'telephone', 'phone', 'address', 'categories'])
         self.assertEqual(data['name'], self.menu_data['name'])
-
+        self.assertEqual(data['description'], self.menu_data['description'])
+        
 class MenuSerializerTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
