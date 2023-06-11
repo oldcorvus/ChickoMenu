@@ -23,6 +23,7 @@ class UserMenusManager(models.Manager):
 
 class Menu(TimeStampedUUIDModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=255)
     image = models.CharField(max_length=255)
     number_of_qrcodes = models.IntegerField(default=1)
