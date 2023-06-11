@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from theme.models import Theme
 from django.contrib.auth import get_user_model
+from utils.test_tools import temporary_image
 
 User = get_user_model()
 
@@ -27,15 +28,15 @@ class ThemeListCreateAPIViewTestCase(APITestCase):
         url = reverse('theme:theme-list')
         data = {
             'name':'Test',
-            'description':'A test',
             'font_family':'Times New Roman',
             'menu_background_color':'#ffffff',
             'menu_text_color':'#000000',
+            'logo_image': temporary_image(),
+            'header_color': '#ffffff',
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Theme.objects.count(), 2)
-        self.assertEqual(Theme.objects.get(description='A test').name, 'Test')
 
 class ThemeRetrieveUpdateDestroyAPIViewTestCase(APITestCase):
     def setUp(self):
@@ -54,7 +55,11 @@ class ThemeRetrieveUpdateDestroyAPIViewTestCase(APITestCase):
 
     def test_update_theme(self):
         url = reverse('theme:theme-detail', kwargs={'pk': self.theme.pk})
-        data = {'name': 'Updated Theme'}
+        data = {
+            'name': 'Updated Theme',
+            'logo_image': temporary_image(),
+            'header_color': '#343a40',
+        }
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.theme.refresh_from_db()
