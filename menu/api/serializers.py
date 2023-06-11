@@ -1,3 +1,4 @@
+from theme.api.serializers import ThemeSerializer
 from ..models import  Category, Menu, MenuItem
 from rest_framework import serializers
 from utils.mixins import SetCustomErrorMessagesMixin
@@ -29,6 +30,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class MenuDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
+    theme = ThemeSerializer(read_only=True)
     id = serializers.ReadOnlyField()
     code  = serializers.ReadOnlyField()
     is_paid = serializers.ReadOnlyField()
@@ -37,7 +39,7 @@ class MenuDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Menu
-        fields = ( 'id','owner','code','is_paid','is_active','name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
+        fields = ( 'id','theme','description','owner','code','is_paid','is_active','name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""
