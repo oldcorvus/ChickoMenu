@@ -6,4 +6,6 @@ class ThemeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Theme
-        fields = ('id','name', 'description', 'preview', 'background_image', 'font_family', 'menu_background_color', 'menu_text_color')
+        fields = ('id','name',  'preview', 'logo_image',\
+             'font_family', 'menu_background_color', 'menu_text_color',\
+                 'header_image', 'header_color' )
