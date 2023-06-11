@@ -7,12 +7,15 @@ class ThemeSerializerTest(APITestCase):
     def setUp(self):
         # Create a sample Theme object for testing
         preview = SimpleUploadedFile(name='test_preview.png', content=b'', content_type='image/png')
-        background_image = SimpleUploadedFile(name='test_background.png', content=b'', content_type='image/png')
-        self.theme = Theme.objects.create(
+        header_image = SimpleUploadedFile(name='test_background.png', content=b'', content_type='image/png')
+        logo_image = SimpleUploadedFile(name='test_background.png', content=b'', content_type='image/png')
+        self.theme =Theme.objects.create(
+            id = 1,
             name='Test Theme',
-            description='A test theme for testing purposes',
             preview=preview,
-            background_image=background_image,
+            header_image=header_image,
+            logo_image = logo_image,
+            header_color='#343a40',
             font_family='Times New Roman',
             menu_background_color='#ffffff',
             menu_text_color='#000000',
@@ -21,23 +24,25 @@ class ThemeSerializerTest(APITestCase):
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertEqual(set(data.keys()), set([ 'id','name', 'description', 'preview', 'background_image', 'font_family', 'menu_background_color', 'menu_text_color']))
+        self.assertEqual(set(data.keys()), set(['id', 'name', \
+            'preview', 'logo_image', 'font_family', 'menu_background_color',\
+                'menu_text_color', 'header_image', 'header_color']))
 
+    def test_logo_image_field_content(self):
+        data = self.serializer.data
+        self.assertIsNotNone(data['logo_image'])
+
+    def test_header_color_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['header_color'], "#343a40")
+        
     def test_name_field_content(self):
         data = self.serializer.data
         self.assertEqual(data['name'], self.theme.name)
 
-    def test_description_field_content(self):
-        data = self.serializer.data
-        self.assertEqual(data['description'], self.theme.description)
-
     def test_preview_field_content(self):
         data = self.serializer.data
         self.assertIsNotNone(data['preview'])
-
-    def test_background_image_field_content(self):
-        data = self.serializer.data
-        self.assertIsNotNone(data['background_image'])
 
     def test_font_family_field_content(self):
         data = self.serializer.data
