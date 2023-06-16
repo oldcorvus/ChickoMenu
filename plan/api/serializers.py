@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from plan.models import Plan, PlanItem
+from plan.models import Plan, PlanItem, UserPlan
 
 class PlanItemSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
@@ -50,3 +50,16 @@ class PlanSerializer(serializers.ModelSerializer):
                     instance.features.add(item)
         instance.save()
         return instance
+
+
+
+class UserPlanSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+    start_date = serializers.ReadOnlyField()
+    end_date = serializers.ReadOnlyField()
+    is_active =  serializers.ReadOnlyField()
+
+    class Meta:
+        model = UserPlan
+        fields = ('id', 'user', 'plan', 'start_date', 'end_date', 'is_active')
+
