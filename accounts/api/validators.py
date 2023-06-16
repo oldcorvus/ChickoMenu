@@ -5,8 +5,8 @@ from rest_framework import serializers
 
 def check_phone_number(value):
     if len(value) > 11 or len(value) < 11:
-        raise serializers.ValidationError(_('.شماره تماس معتبر نیست'))
+        raise serializers.ValidationError(_('phone number is not valid'))
     if not value.startswith('09'):
-        raise serializers.ValidationError(_('شماره تماس معتبر نیست حتما باید با ۰۹ شروع شود.'))
+        raise serializers.ValidationError(_('phone number should start with 09'))
 
     return value
