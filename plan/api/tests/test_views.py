@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
-from plan.models import Plan, PlanItem
+from plan.models import Plan, PlanItem, UserPlan
 from plan.api.serializers import PlanSerializer, PlanItemSerializer
 from django.contrib.auth import get_user_model
 
@@ -159,4 +159,67 @@ class PlanItemViewSetTest(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
             self.assertFalse(PlanItem.objects.filter(id=self.plan_item1.id).exists())
             self.assertTrue(PlanItem.objects.filter(id=self.plan_item2.id).exists())
+
+
+class UserPlanCreateAPIViewTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser2", first_name="Test", last_name="User",
+                                        phone_number="1234567891", email="tes2tuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.plan1 = Plan.objects.create(
+            name='Basic',
+            description='This is a basic plan',
+            price=10.00
+        )
+        self.client = APIClient()
+        self.token = Token.objects.create(user=self.user)
+        self.client.force_authenticate(user=self.user, token= self.token)
+
+    def test_create_user_plan(self):
+        url = reverse('plan:user_plan_create')
+        data = {'plan': self.plan1.id,   
+                 'user' : self.user.id}
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(UserPlan.objects.count(), 1)
+        self.assertEqual(UserPlan.objects.get().user, self.user)
+        self.assertEqual(UserPlan.objects.get().plan, self.plan1)
+
+
+class UserPlansAPIViewTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.plan1 = Plan.objects.create(
+            name='Basic',
+            description='This is a basic plan',
+            price=10.00
+        )
+        self.plan2 = Plan.objects.create(
+            name='Premium',
+            description='This is a premium plan',
+            price=20.00
+        )
+        self.user_plan1 = UserPlan.objects.create(user=self.user, plan= self.plan1)
+        self.user_plan2 = UserPlan.objects.create(user=self.user, plan= self.plan2)
+
+    def test_list_user_plans(self):
+        url = reverse('plan:user_plans', kwargs={'user_id': self.user.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['id'], self.user_plan1.id)
+        self.assertEqual(response.data[0]['plan'], self.user_plan1.plan.id)
+        self.assertEqual(response.data[1]['id'], self.user_plan2.id)
+        self.assertEqual(response.data[1]['plan'], self.user_plan2.plan.id)
+
+    def test_list_user_plans_unauthenticated(self):
+        self.client.logout()
+        url = reverse('plan:user_plans', kwargs={'user_id': self.user.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
