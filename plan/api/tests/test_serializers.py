@@ -1,6 +1,11 @@
 from django.test import TestCase
-from plan.models import Plan, PlanItem
-from ..serializers import PlanSerializer, PlanItemSerializer
+from datetime import datetime, timedelta
+from django.utils import timezone
+from plan.models import Plan, PlanItem, UserPlan
+from django.contrib.auth import get_user_model
+from ..serializers import PlanSerializer, PlanItemSerializer, UserPlanSerializer
+User = get_user_model()
+
 
 class PlanSerializerTest(TestCase):
     def setUp(self):
@@ -132,3 +137,48 @@ class PlanItemSerializerTestCase(TestCase):
         plan_item = PlanItem.objects.get(id=self.plan_item.id)
         self.assertEqual(plan_item.name, new_plan_item_data['name'])
         self.assertEqual(plan_item.description, new_plan_item_data['description'])
+
+
+
+class UserPlanSerializerTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+
+        self.plan = Plan.objects.create(name='Test Plan', price=10.0)
+        self.user_plan_data = {
+            'plan': self.plan.id,
+            'user' : self.user.id
+        }
+
+    def test_create_user_plan(self):
+        serializer = UserPlanSerializer(data=self.user_plan_data)
+        self.assertTrue(serializer.is_valid())
+        user_plan = serializer.save()
+        self.assertEqual(user_plan.user, self.user)
+        self.assertEqual(user_plan.plan, self.plan)
+        self.assertIsNotNone(user_plan.start_date)
+        self.assertIsNone(user_plan.end_date)
+        self.assertFalse(user_plan.is_active)
+
+    def test_create_user_plan_with_invalid_plan_id(self):
+        invalid_plan_id = 999
+        self.user_plan_data['plan'] = invalid_plan_id
+        serializer = UserPlanSerializer(data=self.user_plan_data)
+        self.assertFalse(serializer.is_valid())
+
+
+    def test_activate_user_plan(self):
+        user_plan = UserPlan.objects.create(user=self.user, plan=self.plan, is_active=True)
+        self.assertTrue(user_plan.is_active)
+        serializer = UserPlanSerializer(data=self.user_plan_data)
+        serializer.is_valid()
+        self.assertTrue(serializer.is_valid())
+        user_plan_new = serializer.save()
+        user_plan_new.activate()
+        user_plan.refresh_from_db()
+        self.assertFalse(user_plan.is_active)
+        self.assertTrue(user_plan_new.is_active)
+        self.assertIsNone(user_plan_new.end_date)
+
