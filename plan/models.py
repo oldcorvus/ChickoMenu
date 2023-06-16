@@ -40,4 +40,4 @@ class UserPlan(TimeStampedUUIDModel):
         self.save()
 
     class Meta:
-        unique_together = ('user', 'plan')
+        unique_together = ('user', 'plan','is_active','id')

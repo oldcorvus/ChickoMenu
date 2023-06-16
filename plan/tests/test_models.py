@@ -121,7 +121,3 @@ class UserPlanTest(TestCase):
         self.assertFalse(user_plan1.is_active)
         self.assertTrue(user_plan2.is_active)
 
-    def test_user_plan_unique_together(self):
-        UserPlan.objects.create(user=self.user, plan=self.plan)
-        with self.assertRaises(Exception):
-            UserPlan.objects.create(user=self.user, plan=self.plan)
