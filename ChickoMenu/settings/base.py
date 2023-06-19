@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "theme.apps.ThemeConfig",
     "menu.apps.MenuConfig",
     "plan.apps.PlanConfig",
+    "payment.apps.PaymentConfig",
 
 
 ]
