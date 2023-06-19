@@ -32,7 +32,7 @@ class Sms:
         try:
             api = KavenegarAPI(self.API_KEY)
             params = {
-                'sender': '10008663',
+                'sender': '',
                 'receptor': receiver,
                 'message': message,
             }
