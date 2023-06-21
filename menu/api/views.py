@@ -67,8 +67,8 @@ class CreateCategory(CreateAPIView):
     permission_classes = [IsAuthenticated,MenuOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        menu_id = self.request.POST['menu']
-        menu = get_object_or_404(Menu,pk=menu_id)
+        menu = serializer.validated_data['menu']
+        menu = get_object_or_404(Menu,pk=menu.id)
         serializer.save(menu=menu)
 
 class CreateMenuItem(CreateAPIView):
@@ -79,9 +79,9 @@ class CreateMenuItem(CreateAPIView):
     permission_classes = [IsAuthenticated,MenuOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        menu_id = self.request.POST['menu']
-        category_id = self.request.POST['category']
-        menu = get_object_or_404(Menu,pk=menu_id)
-        category = get_object_or_404(Category,pk=category_id)
+        menu = serializer.validated_data['menu']
+        category = serializer.validated_data['category']
+        menu = get_object_or_404(Menu,pk=menu.id)
+        category = get_object_or_404(Category,pk=category.id)
 
         serializer.save(menu=menu, category= category)
