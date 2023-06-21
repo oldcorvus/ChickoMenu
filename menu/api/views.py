@@ -1,3 +1,4 @@
+from unicodedata import category
 from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import (
@@ -57,3 +58,30 @@ class MenuItemDetail(RetrieveUpdateDestroyAPIView):
     
     def get_object(self):
         return get_object_or_404(MenuItem, pk=self.kwargs['pk'])
+
+class CreateCategory(CreateAPIView):
+    """
+    Create a new category.
+    """
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated,MenuOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        menu_id = self.request.POST['menu']
+        menu = get_object_or_404(Menu,pk=menu_id)
+        serializer.save(menu=menu)
+
+class CreateMenuItem(CreateAPIView):
+    """
+    Create a new menu item.
+    """
+    serializer_class = MenuItemSerializer
+    permission_classes = [IsAuthenticated,MenuOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        menu_id = self.request.POST['menu']
+        category_id = self.request.POST['category']
+        menu = get_object_or_404(Menu,pk=menu_id)
+        category = get_object_or_404(Category,pk=category_id)
+
+        serializer.save(menu=menu, category= category)
