@@ -7,6 +7,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.urls import reverse
+from utils.test_tools import temporary_image
 
 
 User = get_user_model()
@@ -127,7 +128,6 @@ class UserMenusTestCase(APITestCase):
 
         # Ensure no new menu was created
         self.assertFalse(Menu.objects.filter(name='').exists())
-
 
 
 class MenuDetailTestCase(APITestCase):
@@ -313,9 +313,6 @@ class CategoryDetailTests(APITestCase):
         self.assertTrue(Category.objects.filter(pk=self.category2.pk).exists())
 
 
-
-
-
 class MenuItemDetailTestCase(APITestCase):
     
     def setUp(self):
@@ -324,7 +321,8 @@ class MenuItemDetailTestCase(APITestCase):
                                         is_active=True, is_admin=False, is_staff=False)
         self.menu = Menu.objects.create(name='Test Menu 1', owner=self.user)
         self.category = Category.objects.create(name='Category 1', menu=self.menu)
-        self.menu_item = MenuItem.objects.create(pk= 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fdd',name='Test Item',menu=self.menu, category = self.category, description='Test Description', price=10.0)
+        self.menu_item = MenuItem.objects.create(pk= 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fdd',\
+            name='Test Item',menu=self.menu, category = self.category, description='Test Description', price=10.0)
         self.url = reverse('menu:menu-item-detail', kwargs={'pk': self.menu_item.pk})
         self.token = Token.objects.create(user=self.user)
         self.client.force_authenticate(user=self.user, token= self.token)
@@ -386,3 +384,127 @@ class MenuItemDetailTestCase(APITestCase):
         self.menu_item.menu.save()
         response = self.client.patch(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+
+class CreateCategoryTestCase(APITestCase):
+
+    def setUp(self):
+        # Create a user and a menu
+        self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.menu = Menu.objects.create(name='Test Menu', owner=self.user)
+
+        # Set up the URL for creating a category for this menu
+        self.url = reverse('menu:category-create')
+        self.token = Token.objects.create(user=self.user)
+
+        # Set up the serializer data for creating a category
+        self.category_data = {
+            'name': 'Test Category',
+            'menu': self.menu.id,
+        }
+
+    def test_create_category(self):
+        """
+        Test creating a new category for a menu.
+        """
+        # Log in the user
+        self.client.force_authenticate(self.user, token= self.token)
+
+        # Make a POST request to create a new category
+        response = self.client.post(self.url, self.category_data)
+
+        # Check that the response status code is 201 CREATED
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Check that the category was created with the correct data and menu
+        category = Category.objects.last()
+        self.assertEqual(category.name, self.category_data['name'])
+        self.assertEqual(category.menu.id, self.menu.id)
+
+    def test_create_category_unauthenticated(self):
+        """
+        Test creating a new category for a menu without authentication.
+        """
+        # Make a POST request to create a new category without logging in
+        response = self.client.post(self.url, self.category_data)
+
+        # Check that the response status code is 401 UNAUTHORIZED
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_category_wrong_owner(self):
+        """
+        Test creating a new category for a menu as a user who is not the owner of the menu.
+        """
+        # Create a different user and log them in
+        other_user =  User.objects.create(username="otheruser", first_name="Test2", last_name="User2",
+                                        phone_number="1234567810", email="testuser2@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+     
+        token = Token.objects.create(user=other_user)
+        self.client.force_authenticate(other_user, token= token)
+
+        # Make a POST request to create a new category
+        response = self.client.post(self.url, self.category_data)
+        # Check that the response status code is 403 FORBIDDEN
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+
+class CreateMenuItemTestCase(APITestCase):
+    def setUp(self):
+        self.user =  User.objects.create(username="testuser", first_name="Test", last_name="User",
+                                        phone_number="1234567890", email="testuser@example.com",
+                                        is_active=True, is_admin=False, is_staff=False)
+        self.token = Token.objects.create(user=self.user)
+
+        self.menu = Menu.objects.create(name='Test Menu', owner=self.user,id= 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fdd')
+        self.category = Category.objects.create(name='Test Category', menu=self.menu, id= 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fda')
+        self.url = reverse('menu:create-menu-item',)
+        self.data = {'name': 'Test Item', 
+        'description': 'Test Description', 'price': 9.99,
+        'image': temporary_image(),
+        'menu': self.menu.id,
+        'category':self.category.id}
+
+    def test_create_menu_item(self):
+        self.client.force_authenticate(self.user, token= self.token)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(MenuItem.objects.count(), 1)
+        menu_item = MenuItem.objects.first()
+        self.assertEqual(menu_item.name, self.data['name'])
+        self.assertEqual(menu_item.description, self.data['description'])
+        self.assertEqual(str(menu_item.menu.id), self.menu.id)
+        self.assertEqual(str(menu_item.category.id) , self.category.id)
+
+    def test_create_menu_item_unauthenticated(self):
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(MenuItem.objects.count(), 0)
+
+    def test_create_menu_item_invalid_menu(self):
+        self.client.force_authenticate(self.user, token= self.token)
+        self.data['menu'] = 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fda'
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(MenuItem.objects.count(), 0)
+
+    def test_create_menu_item_invalid_category(self):
+        self.client.force_authenticate(self.user, token= self.token)
+        self.data['category' ] = 'd0c9db05-8135-43c6-83d5-a4dd1d2f3fdd'
+        response = self.client.post(self.url, self.data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(MenuItem.objects.count(), 0)
+
+    def test_create_menu_item_invalid_data(self):
+        self.client.force_authenticate(self.user, token= self.token)
+        data = {'name': '', 'description': 'Test Description', 'price': -9.99,        'menu': self.menu.id,
+        'category':self.category.id}
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(MenuItem.objects.count(), 0)
