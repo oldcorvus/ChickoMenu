@@ -19,6 +19,16 @@ class MenuItemSerializer(serializers.ModelSerializer):
             'image': {'required': False}
         }
         
+    def create(self, validated_data):
+            # Get the uploaded image file from the validated data
+        image_file = validated_data.pop('image', None)
+        # Create a new MenuItem instance with the remaining validated data
+        menu_item = MenuItem.objects.create(**validated_data)
+        # If an image file was uploaded, save it to the file system and update the MenuItem instance
+        if image_file:
+            menu_item.image.save(image_file.name, image_file)
+        return menu_item
+
 class CategorySerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True)
     number_of_items = serializers.SerializerMethodField()
