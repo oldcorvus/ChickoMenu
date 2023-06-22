@@ -15,7 +15,10 @@ class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
         fields = ('id', 'name', 'description', 'price', 'discount', 'image', 'is_available', 'menu', 'category')
-
+        extra_kwargs = {
+            'image': {'required': False}
+        }
+        
 class CategorySerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True)
     number_of_items = serializers.SerializerMethodField()

@@ -12,6 +12,8 @@ from .serializers import (
     MenuItemSerializer,
     MenuSerializer,
 )
+from rest_framework.parsers import MultiPartParser
+
 from django.shortcuts import get_object_or_404
 
 from .permissions import IsOwnerOrReadOnly, MenuOwnerOrReadOnly
@@ -77,7 +79,8 @@ class CreateMenuItem(CreateAPIView):
     """
     serializer_class = MenuItemSerializer
     permission_classes = [IsAuthenticated,MenuOwnerOrReadOnly]
-
+    parser_classes = [MultiPartParser]
+    
     def perform_create(self, serializer):
         menu = serializer.validated_data['menu']
         category = serializer.validated_data['category']
