@@ -8,6 +8,7 @@ except ImportError:
     from django.utils.translation import gettext_lazy as _
 
 from  accounts.api.serializers import UserSerializer
+from theme.models import Theme
 
 class MenuItemSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
@@ -43,7 +44,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class MenuDetailSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
-    theme = ThemeSerializer(read_only=True)
+    theme = ThemeSerializer(required= False)
     id = serializers.ReadOnlyField()
     code  = serializers.ReadOnlyField()
     is_paid = serializers.ReadOnlyField()
@@ -61,14 +62,16 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""
     number_of_categories = serializers.SerializerMethodField()
     number_of_items = serializers.SerializerMethodField()
+    theme = ThemeSerializer(required = False)
     id = serializers.ReadOnlyField()
 
     class Meta:
         model = Menu
-        fields = ('id','name', 'image' , 'number_of_items' , 'number_of_categories')
+        fields = ('id','name', 'theme','image' , 'number_of_items' , 'number_of_categories')
         
 
-        extra_kwargs = {
+        extra_kwargs = {    
+
         'name': {
             'error_messages': {
                 'blank': _('Name cannot be blank.'),
@@ -80,6 +83,7 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
                 'blank': _('Image cannot be blank.'),
             },
         },
+
     }
     def get_number_of_categories(self, obj):
         return obj.categories.count()
@@ -87,10 +91,18 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     def get_number_of_items(self, obj):
         categories = obj.categories.all()
         return  sum(category.menu_items.count() for category in categories)
-
+   
     def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user
-        return super().create(validated_data)
+        # Get the theme data from the request data, if it exists
+        theme_data = validated_data.pop('theme', None)
+        # Create the menu object
+        menu = Menu.objects.create( **validated_data)
+        # If a theme was provided, create a related Theme object
+        if theme_data:
+            theme = Theme.objects.create(menu=menu, **theme_data)
+            menu.theme = theme
+        menu.save()
+        return menu
 
     def update(self, instance, validated_data):
         validated_data['owner'] = self.context['request'].user
