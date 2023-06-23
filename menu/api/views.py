@@ -41,7 +41,7 @@ class UserMenus(ListCreateAPIView):
 
 
 class MenuDetail(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
     serializer_class = MenuDetailSerializer
 
     def get_object(self):
