@@ -95,6 +95,7 @@ class MenuItem(TimeStampedUUIDModel):
     image = models.ImageField(
         upload_to='menu_items/',
         verbose_name=_('image'),
+        blank = True,
     )
     is_available = models.BooleanField(
         default=True,

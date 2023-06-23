@@ -353,19 +353,19 @@ class MenuItemDetailTestCase(APITestCase):
 
     def test_retrieve_nonexistent_menu_item(self):
         url = reverse('menu:menu-item-detail', kwargs={'pk': '541abe7f-2419-482f-941b-941e72e6a23a'})
-        response = self.client.get(url)
+        response = self.client.get(url, data={'menu_item_pk': self.menu_item.pk})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_nonexistent_menu_item(self):
         url = reverse('menu:menu-item-detail', kwargs={'pk': '541abe7f-2419-482f-941b-941e72e6a23a'})
-        data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 20.0}
+        data = {'name': 'Updated Item', 'menu_item_pk': self.menu_item.pk, 'description': 'Updated Description', 'price': 20.0}
         response = self.client.patch(url, data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_nonexistent_menu_item(self):
         url = reverse('menu:menu-item-detail', kwargs={'pk': '541abe7f-2419-482f-941b-941e72e6a23a'})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.delete(url, data={'menu_item_pk': self.menu_item.pk})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_unauthorized_request(self):
         data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 20.0,'menu_item_pk': self.menu_item.pk}
