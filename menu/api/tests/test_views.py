@@ -1,3 +1,4 @@
+from urllib import response
 from django.test import TestCase, RequestFactory
 from menu.models import Menu,Category, MenuItem
 from ..views import ListOfAllActiveMenus
@@ -45,6 +46,48 @@ class UserMenusTestCase(APITestCase):
         self.token = Token.objects.create(user=self.user)
         self.client.force_authenticate(user=self.user, token=self.token)
 
+
+    def test_create_menu_with_theme(self):
+        # Define the data for the new menu and its related theme
+        data = {
+            'name': 'Menu with theme',
+            'image': None,
+            'theme': {
+                'name': 'Dark theme',
+                'header_color': '#333333'
+            }
+        }
+
+        # Send the POST request to create the new menu
+        response = self.client.post(reverse('menu:user_menus'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Check that the new menu object was created with the related theme object
+        menu_id = response.data['id']
+        menu = Menu.objects.get(id=menu_id)
+        self.assertEqual(menu.name, data['name'])
+        self.assertEqual(menu.image, data['image'])
+        self.assertIsNotNone(menu.theme)
+        self.assertEqual(menu.theme.name, data['theme']['name'])
+        self.assertEqual(menu.theme.header_color, data['theme']['header_color'])
+
+    def test_create_menu_without_theme(self):
+        # Define the data for the new menu
+        data = {
+            'name': 'Menu without theme',
+            'image': None,
+        }
+
+        # Send the POST request to create the new menu
+        response = self.client.post(reverse('menu:user_menus'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Check that the new menu object was created without a related theme object
+        menu_id = response.data['id']
+        menu = Menu.objects.get(id=menu_id)
+        self.assertEqual(menu.name, data['name'])
+        self.assertEqual(menu.image, data['image'])
+        self.assertIsNone(menu.theme)
 
     def test_get_user_menus(self):
         # Create some menus for the authenticated user
