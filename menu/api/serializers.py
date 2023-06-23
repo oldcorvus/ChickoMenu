@@ -18,7 +18,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'image': {'required': False}
         }
-        
+
     def create(self, validated_data):
             # Get the uploaded image file from the validated data
         image_file = validated_data.pop('image', None)
