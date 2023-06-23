@@ -25,7 +25,7 @@ class Menu(TimeStampedUUIDModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=255)
-    image = models.CharField(max_length=255)
+    image = models.CharField(max_length=255,blank=True , null=True)
     number_of_qrcodes = models.IntegerField(default=1)
     code = models.PositiveIntegerField(unique=True, default=81413)
     telephone = models.CharField(max_length=25, blank=True, null=True)

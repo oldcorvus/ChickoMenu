@@ -53,6 +53,9 @@ class MenuDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
         fields = ( 'id','theme','description','owner','code','is_paid','is_active','name', 'image', 'number_of_qrcodes', 'categories', 'telephone', 'phone', 'address')
+        extra_kwargs = {
+            'image': {'required': False}
+        }
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""
