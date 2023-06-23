@@ -58,13 +58,18 @@ class MenuDetailSerializer(serializers.ModelSerializer):
             'image': {'required': False}
         }
 
-    def update(self, instance, validated_data):
-        # Get the theme data from the request data, if it exists
+    def create(self, validated_data):
         theme_data = validated_data.pop('theme', None)
-        # Update the Menu object
-        menu = super().update(instance, validated_data)
+        menu = super().create(validated_data)
+        if theme_data is not None:
+            theme = Theme.objects.create(menu=menu, **theme_data)
+            menu.theme = theme
+            menu.save()
+        return menu
 
-        # If a theme was provided, update the related Theme object
+    def update(self, instance, validated_data):
+        theme_data = validated_data.pop('theme', None)
+        menu = super().update(instance, validated_data)
         if theme_data is not None:
             if menu.theme:
                 theme = menu.theme
@@ -74,9 +79,9 @@ class MenuDetailSerializer(serializers.ModelSerializer):
             else:
                 theme = Theme.objects.create(menu=menu, **theme_data)
                 menu.theme = theme
-
-        menu.save()
+            menu.save()
         return menu
+
 
 class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     """Serializer for the menu object"""

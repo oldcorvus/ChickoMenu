@@ -130,6 +130,11 @@ class MenuDetailSerializerTestCase(TestCase):
         self.assertEqual(updated_menu.name, data['name'])
         self.assertEqual(updated_menu.theme.name, 'Updated Theme')
         self.assertEqual(updated_menu.theme.header_color, 'red')
+        data = {'name': 'Updated Menu', 'theme': { 'name': 'Updated2 Theme', 'header_color': 'red'}}
+        updated_menu = self.serializer.update(self.menu, data)
+        self.assertEqual(updated_menu.name, data['name'])
+        self.assertEqual(updated_menu.theme.name, 'Updated2 Theme')
+
         self.assertEqual(Menu.objects.count(), 1)
         self.assertEqual(Theme.objects.count(), 1)
 
