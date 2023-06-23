@@ -8,7 +8,7 @@ try:
     from django.utils.translation import ugettext_lazy as _
 except ImportError:
     from django.utils.translation import gettext_lazy as _
-
+from theme.models import Theme
 
 User = get_user_model()
 
@@ -123,6 +123,16 @@ class MenuDetailSerializerTestCase(TestCase):
         self.assertCountEqual(data.keys(), ['id', 'theme', 'description', 'owner', 'code', 'is_paid', 'is_active', 'name', 'image', 'number_of_qrcodes', 'telephone', 'phone', 'address', 'categories'])
         self.assertEqual(data['name'], self.menu_data['name'])
         self.assertEqual(data['description'], self.menu_data['description'])
+    
+    def test_update_menu_with_theme(self):
+        data = {'name': 'Updated Menu', 'theme': { 'name': 'Updated Theme', 'header_color': 'red'}}
+        updated_menu = self.serializer.update(self.menu, data)
+        self.assertEqual(updated_menu.name, data['name'])
+        self.assertEqual(updated_menu.theme.name, 'Updated Theme')
+        self.assertEqual(updated_menu.theme.header_color, 'red')
+        self.assertEqual(Menu.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+
         
 class MenuSerializerTestCase(TestCase):
     def setUp(self):
@@ -135,7 +145,7 @@ class MenuSerializerTestCase(TestCase):
             'image': 'https://example.com/menu.jpg',
             'owner' : self.user,
         }
-        Menu.objects.create(**self.menu_data)
+        self.menu = Menu.objects.create(**self.menu_data)
 
         self.serializer = MenuSerializer(data=self.menu_data, context={'request': {'user': self.user}})
 
@@ -155,3 +165,25 @@ class MenuSerializerTestCase(TestCase):
         error_message = str(context.exception.detail['name'][0])
 
         self.assertEqual(error_message, expected_error_message['name'][0])
+    
+    def test_update_menu_with_theme(self):
+        theme_data = {'name': 'Test Theme', 'header_color': 'blue'}
+        theme = Theme.objects.create(**theme_data)
+        self.menu.theme = theme
+        self.menu.save()
+        data = {'name': 'Updated Menu', 'theme': { 'name': 'Updated Theme', 'header_color': 'red'}}
+        updated_menu = self.serializer.update(self.menu, data)
+        self.assertEqual(updated_menu.name, data['name'])
+        self.assertEqual(updated_menu.theme.name,'Updated Theme')
+        self.assertEqual(updated_menu.theme.header_color,'red' )
+        self.assertEqual(Menu.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+
+    def test_update_menu_without_theme(self):
+        data = {'name': 'Updated Menu'}
+
+        updated_menu = self.serializer.update(self.menu, data)
+
+        self.assertEqual(updated_menu.name, data['name'])
+        self.assertEqual(Menu.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 0)
