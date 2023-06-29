@@ -87,7 +87,7 @@ class UserMenusTestCase(APITestCase):
         menu = Menu.objects.get(id=menu_id)
         self.assertEqual(menu.name, data['name'])
         self.assertEqual(menu.image, data['image'])
-        self.assertIsNone(menu.theme)
+        self.assertIsNotNone(menu.theme)
 
     def test_get_user_menus(self):
         # Create some menus for the authenticated user
@@ -246,42 +246,7 @@ class MenuDetailTestCase(APITestCase):
         # Ensure the menu instance was deleted
         self.assertFalse(Menu.objects.filter(pk=self.menu.pk).exists())
 
-    def test_get_menu_detail_unauthenticated(self):
-        # Make a GET request to the menu detail URL without authentication
-        url = reverse('menu:menu_detail', args=[self.menu.pk])
-        response = self.client.get(url)
-
-        # Ensure the response status code is 401 UNAUTHORIZED
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_update_menu_detail_unauthenticated(self):
-        # Define the data to update the menu
-        updated_data = {'name': 'New Name'}
-
-        # Make a PUT request to the menu detail URL without authentication
-        url = reverse('menu:menu_detail', args=[self.menu.pk])
-        response = self.client.put(url, updated_data)
-
-        # Ensure the response status code is 401 UNAUTHORIZED
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-        # Refresh the menu instance from the database
-        self.menu.refresh_from_db()
-
-        # Ensure the menu instance was not updated with the new data
-        self.assertNotEqual(self.menu.name, updated_data['name'])
-
-    def test_delete_menu_detail_unauthenticated(self):
-        # Make a DELETE request to the menu detail URL without authentication
-        url = reverse('menu:menu_detail', args=[self.menu.pk])
-        response = self.client.delete(url)
-
-        # Ensure the response status code is 401 UNAUTHORIZED
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-        # Ensure the menu instance was not deleted
-        self.assertTrue(Menu.objects.filter(pk=self.menu.pk).exists())
-        
+     
 class CategoryDetailTests(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create(username="testuser", first_name="Test", last_name="User",

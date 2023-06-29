@@ -99,7 +99,7 @@ class MenuDetailSerializerTestCase(TestCase):
                                         phone_number="1234567890", email="testuser@example.com",
                                         is_active=True, is_admin=False, is_staff=False)
         self.menu_data = {
-            'owner': self.user,
+            
             'name': 'My Menu',
             'description': 'My Menu Description',
             'image': 'https://example.com/menu.jpg',
@@ -109,13 +109,16 @@ class MenuDetailSerializerTestCase(TestCase):
             'phone': '+123456789',
             'address': '123 Main St',
         }
-        self.menu = Menu.objects.create(**self.menu_data)
+        self.serializer = MenuDetailSerializer(data=self.menu_data ,context={'owner': self.user})
+        self.serializer.is_valid(raise_exception=True)
+
+        self.menu= self.serializer.save()
         self.category_data = {
             'name': 'Pizza',
             'menu': self.menu,
         }
         self.category = Category.objects.create(**self.category_data)
-        self.serializer = MenuDetailSerializer(instance=self.menu)
+
         self.category_serializer = CategorySerializer(instance=self.category)
 
     def test_contains_expected_fields(self):
@@ -125,12 +128,13 @@ class MenuDetailSerializerTestCase(TestCase):
         self.assertEqual(data['description'], self.menu_data['description'])
     
     def test_update_menu_with_theme(self):
-        data = {'name': 'Updated Menu', 'theme': { 'name': 'Updated Theme', 'header_color': 'red'}}
+        data = {'name': 'Updated Menu', 'theme': { 'name': 'Updated Theme','logo_image':'test1.jpg', 'header_color': 'red'}}
         updated_menu = self.serializer.update(self.menu, data)
         self.assertEqual(updated_menu.name, data['name'])
         self.assertEqual(updated_menu.theme.name, 'Updated Theme')
         self.assertEqual(updated_menu.theme.header_color, 'red')
-        data = {'name': 'Updated Menu', 'theme': { 'name': 'Updated2 Theme', 'header_color': 'red'}}
+        data = {'name': 'Updated Menu',
+         'theme': { 'name': 'Updated2 Theme','logo_image':'test2.jpg', 'header_color': 'red'}}
         updated_menu = self.serializer.update(self.menu, data)
         self.assertEqual(updated_menu.name, data['name'])
         self.assertEqual(updated_menu.theme.name, 'Updated2 Theme')
