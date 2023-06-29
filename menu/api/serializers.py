@@ -60,11 +60,16 @@ class MenuDetailSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         theme_data = validated_data.pop('theme', None)
+        owner =   self.context.get('owner')
+        validated_data['owner'] = owner
+
         menu = super().create(validated_data)
-        if theme_data is not None:
-            theme = Theme.objects.create(menu=menu, **theme_data)
-            menu.theme = theme
-            menu.save()
+   
+        if theme_data is None:
+            theme_data = {} 
+        theme = Theme.objects.create(menu=menu, **theme_data)
+        menu.theme = theme
+        menu.save()
         return menu
 
     def update(self, instance, validated_data):
@@ -116,16 +121,14 @@ class MenuSerializer(SetCustomErrorMessagesMixin, serializers.ModelSerializer):
     def get_number_of_items(self, obj):
         categories = obj.categories.all()
         return  sum(category.menu_items.count() for category in categories)
-   
+    
     def create(self, validated_data):
-        # Get the theme data from the request data, if it exists
         theme_data = validated_data.pop('theme', None)
-        # Create the menu object
-        menu = Menu.objects.create( **validated_data)
-        # If a theme was provided, create a related Theme object
-        if theme_data:
-            theme = Theme.objects.create(menu=menu, **theme_data)
-            menu.theme = theme
+        menu = super().create(validated_data)
+        if theme_data is None:
+            theme_data = {} # Set default theme data here
+        theme = Theme.objects.create(menu=menu, **theme_data)
+        menu.theme = theme
         menu.save()
         return menu
 
