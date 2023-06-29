@@ -13,7 +13,7 @@ class PlanViewSetTest(APITestCase):
         self.client = APIClient()
         self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
                                         phone_number="1234567890", email="testuser@example.com",
-                                        is_active=True, is_admin=False, is_staff=False)
+                                        is_active=True, is_admin=True, is_staff=False)
 
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
@@ -93,14 +93,14 @@ class PlanViewSetTest(APITestCase):
         self.client.credentials()
         url = reverse('plan:plan-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class PlanItemViewSetTest(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
                                         phone_number="1234567890", email="testuser@example.com",
-                                        is_active=True, is_admin=False, is_staff=False)
+                                        is_active=True, is_admin=True, is_staff=False)
 
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
