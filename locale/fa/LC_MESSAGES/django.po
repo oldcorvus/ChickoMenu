@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-24 23:26+0200\n"
+"POT-Creation-Date: 2023-07-08 18:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,137 +20,137 @@ msgstr ""
 
 #: ChickoMenu/settings/base.py:20
 msgid "English"
-msgstr ""
+msgstr "انگلیسی"
 
 #: ChickoMenu/settings/base.py:21
 msgid "Persian"
-msgstr ""
+msgstr "فارسی"
 
-#: accounts/api/serializers.py:20 accounts/api/serializers.py:27
+#: accounts/api/serializers.py:21 accounts/api/serializers.py:28
 msgid "Username cannot be blank."
-msgstr ""
-
-#: accounts/api/serializers.py:21
-msgid "Password cannot be blank."
-msgstr ""
+msgstr "نام کاربری نمیتواند خالی باشد"
 
 #: accounts/api/serializers.py:22
+msgid "Password cannot be blank."
+msgstr "پسورد نمیتواند خالی باشد"
+
+#: accounts/api/serializers.py:23
 msgid "Phonenumber cannot be blank."
-msgstr ""
+msgstr "شماره تماس نمیتواند خالی باشد"
 
-#: accounts/api/serializers.py:26
+#: accounts/api/serializers.py:27
 msgid "This username has already been taken. Please choose a different one."
-msgstr ""
-
-#: accounts/api/serializers.py:30
-msgid ""
-"This phone number has already been taken. Please choose a different one."
-msgstr ""
+msgstr "این نام کاربری از قبل برای کاربر دیگری سیو شده است لطفا  نام کاربری دیگری وارد کنید"
 
 #: accounts/api/serializers.py:31
+msgid ""
+"This phone number has already been taken. Please choose a different one."
+msgstr "این شماره تماس از قبل برای کاربر دیگری سیو شده است لطفا شماره تماس دیگری وارد کنید"
+
+#: accounts/api/serializers.py:32
 msgid "Phone number cannot be blank."
-msgstr ""
+msgstr "شماره تماس نمیتواند خالی باشد"
 
-#: accounts/api/serializers.py:43
+#: accounts/api/serializers.py:44
 msgid "Password must be at least 8 characters."
-msgstr ""
+msgstr "پسورد باید حداقل ۸ کارکتر باشد"
 
-#: accounts/api/serializers.py:70
+#: accounts/api/serializers.py:71
 msgid "The entered code is incorrect."
-msgstr ""
+msgstr "کد وارد شده معتبر نیست"
 
 #: accounts/api/validators.py:8
-msgid ".شماره تماس معتبر نیست"
-msgstr ""
+msgid "phone number is not valid"
+msgstr "شماره تماس معتبر نیست"
 
 #: accounts/api/validators.py:10
-msgid "شماره تماس معتبر نیست حتما باید با ۰۹ شروع شود."
-msgstr ""
+msgid "phone number should start with 09"
+msgstr "شماره تماس باید با ۰۹ اغاز شود"
 
 #: accounts/api/views.py:45
 msgid "Code was sent successfully"
-msgstr ""
+msgstr "کد به درستی ارسال شده است"
 
 #: accounts/api/views.py:47
 msgid "Code wasn't sent successfully"
-msgstr ""
+msgstr "کد به درستی ارسال نشده است"
 
 #: accounts/api/views.py:78
 msgid "status"
-msgstr ""
+msgstr "وضعیت"
 
 #: accounts/api/views.py:78
 msgid "Account successfully created."
-msgstr ""
+msgstr "حساب کاربری با موفقیت ساخته شده است"
 
 #: accounts/api/views.py:84
 msgid "incorrect code"
-msgstr ""
+msgstr "کد ناصحیح"
 
 #: accounts/api/views.py:84
 msgid "The code entered is incorrect."
-msgstr ""
+msgstr "کد وارد شده صحیح نمیباشد"
 
 #: accounts/api/views.py:91
 msgid "expired code"
-msgstr ""
+msgstr "کد منقضی شده"
 
 #: accounts/api/views.py:91
 msgid "The code has expired."
-msgstr ""
-
-#: accounts/models.py:36
-msgid "address"
-msgstr ""
+msgstr "کد منقضی شده است"
 
 #: accounts/models.py:37
+msgid "address"
+msgstr "آدرس"
+
+#: accounts/models.py:38
 msgid "post code"
-msgstr ""
+msgstr "کد پستی"
 
-#: menu/api/serializers.py:42 menu/api/tests/test_serializers.py:151
+#: menu/api/serializers.py:107 menu/api/tests/test_serializers.py:168
 msgid "Name cannot be blank."
-msgstr ""
+msgstr "تصویر نمیتواند خالی باشد"
 
-#: menu/api/serializers.py:47 menu/api/tests/test_serializers.py:158
+#: menu/api/serializers.py:113
 msgid "Image cannot be blank."
-msgstr ""
+msgstr "تصویر نمیتواند خالی باشد"
 
-#: menu/models.py:66
+#: menu/models.py:67
 msgid "menu"
-msgstr ""
+msgstr "منو"
 
-#: menu/models.py:72
+#: menu/models.py:73
 msgid "category"
-msgstr ""
+msgstr "دسته بندی"
 
-#: menu/models.py:76
+#: menu/models.py:77
 msgid "name"
-msgstr ""
+msgstr "نام"
 
-#: menu/models.py:80
+#: menu/models.py:81
 msgid "description"
-msgstr ""
+msgstr "توضیحات"
 
-#: menu/models.py:86
+#: menu/models.py:87
 msgid "price"
-msgstr ""
+msgstr "قیمت"
 
-#: menu/models.py:92
+#: menu/models.py:93
 msgid "discount"
-msgstr ""
+msgstr "تخفیف"
 
-#: menu/models.py:96
+#: menu/models.py:97
 msgid "image"
-msgstr ""
+msgstr "تصویر"
 
-#: menu/models.py:100
+#: menu/models.py:103
 msgid "is available"
-msgstr ""
+msgstr "فعال بودن"
 
-#: menu/models.py:104
+#: menu/models.py:107
 msgid "menu item"
-msgstr ""
+msgstr "ایتم منو"
 
-#: menu/models.py:105
+#: menu/models.py:108
 msgid "menu items"
-msgstr ""
+msgstr "ایتم های منو"
