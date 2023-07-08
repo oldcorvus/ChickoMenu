@@ -20,7 +20,9 @@ class ThemeModelTest(TestCase):
             font_family='Times New Roman',
             menu_background_color='#ffffff',
             menu_text_color='#000000',
+            menu_item_background_color = '#ffffff'
         )
+
         
     def test_theme_logo_image_upload_to(self):
         theme = Theme.objects.get(id=1)
@@ -61,3 +63,8 @@ class ThemeModelTest(TestCase):
         theme = Theme.objects.get(id=1)
         expected_upload_to = 'theme_preview'
         self.assertEqual(expected_upload_to, theme.preview.field.upload_to)
+
+    def test_theme_menu_item_background_color(self):
+        theme = Theme.objects.get(id=1)
+        expected_menu_item_background_color = '#ffffff'
+        self.assertEqual(expected_menu_item_background_color, theme.menu_item_background_color)
