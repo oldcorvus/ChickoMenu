@@ -19,6 +19,7 @@ class ThemeSerializerTest(APITestCase):
             font_family='Times New Roman',
             menu_background_color='#ffffff',
             menu_text_color='#000000',
+            menu_item_background_color = "#ffffff"
         )
         self.serializer = ThemeSerializer(instance=self.theme)
 
@@ -26,7 +27,7 @@ class ThemeSerializerTest(APITestCase):
         data = self.serializer.data
         self.assertEqual(set(data.keys()), set(['id', 'name', \
             'preview', 'logo_image', 'font_family', 'menu_background_color',\
-                'menu_text_color', 'header_image', 'header_color']))
+                'menu_text_color', 'header_image','menu_item_background_color', 'header_color']))
 
     def test_logo_image_field_content(self):
         data = self.serializer.data
@@ -51,6 +52,10 @@ class ThemeSerializerTest(APITestCase):
     def test_menu_background_color_field_content(self):
         data = self.serializer.data
         self.assertEqual(data['menu_background_color'], self.theme.menu_background_color)
+
+    def test_menu_item_background_color_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data['menu_item_background_color'], self.theme.menu_item_background_color)
 
     def test_menu_text_color_field_content(self):
         data = self.serializer.data
