@@ -10,7 +10,7 @@ class Theme(TimeStampedUUIDModel):
     logo_image = models.ImageField(upload_to='theme_image', blank=True, null=True)
     header_color = models.CharField(max_length=7, default='#2196f3')
     header_image = models.ImageField(upload_to='theme_image', blank=True, null=True)
-    menu_item_background_color =  models.CharField(max_length=7, default='#ffffff')
+    menu_item_background_color =  models.CharField(max_length=7, default='#808080')
 
 
     def __str__(self):
