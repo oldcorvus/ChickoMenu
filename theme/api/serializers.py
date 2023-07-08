@@ -8,7 +8,7 @@ class ThemeSerializer(serializers.ModelSerializer):
         model = Theme
         fields = ('id','name',  'preview', 'logo_image',\
              'font_family', 'menu_background_color', 'menu_text_color',\
-                 'header_image', 'header_color' )
+                 'header_image', 'header_color', 'menu_item_background_color' )
 
     def update(self, instance, validated_data):
         logo_image = validated_data.pop('logo_image', None)
