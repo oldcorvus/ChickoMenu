@@ -93,7 +93,7 @@ If you prefer to run the application using Docker, follow these steps:
 ```
 Once the containers are running, you can view the site at http://localhost:8000/.
 
-## Important
+# Important
 
 It is important to change sensitive information such as secret keys and API keys before deploying your application to production. Leaving default or test values in production can make your application vulnerable to security risks such as data breaches and unauthorized access
 
