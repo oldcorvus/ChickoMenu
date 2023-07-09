@@ -133,6 +133,7 @@ http://127.0.0.1:8000/redoc/
 The ChickoMenu digital menu generator includes the following features:
 
 User plan
+Catch for menu views
 OTP authentication
 Token-based authentication
 Celery 
