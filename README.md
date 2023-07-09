@@ -1,50 +1,47 @@
-# ChickoMenu
-Digital Menu Genrator
- 
+# ChickoMenu Digital Menu Generator
 
-Not finished yet !
+**Note: This project is not finished yet!**
 
-[ Sample Front ](https://github.com/younes-nb/chicko-frontend)
+Check out the [sample front-end](https://github.com/younes-nb/chicko-frontend).
 
-# Django Digital Menu Genrator 
+# Setup
 
-## Setup
-
-clone the repository:
+1. Clone the repository:
 
 ```sh
 $ git clone https://github.com/oldcorvus/ChickoMenu.git
 ```
 
-Create a virtual environment to install dependencies in and activate it:
+2.Create a virtual environment and activate it:
 
 ```sh
 $ virtualenv env
 $ source env/bin/activate
 ```
 
-Then install the dependencies:
+3.Install the required dependencies:
 
 ```sh
 (env)$ pip install -r requirements/development.txt
 ```
+# Environment Variables
 
+After pip has finished downloading the dependencies, create the following two .env files in the root of the project:
 
-Once `pip` has finished downloading the dependencies:
-create two .env files  in root of project
+## sample .env file:
 
-sample .env
 ```sh
-# تنظیمات Celery
+# Celery Settings
 CELERY_BROKER_URL=redis://redis:6379/0
 CELERY_RESULT_BACKEND=redis://redis:6379/0
 
-# تنظیمات Flower
+# Flower Settings
 FLOWER_PORT=5555
 FLOWER_BASIC_AUTH=username:password
 ```
 
-sample .env.db
+## sample .env.db file:
+
 ```sh
 POSTGRES_USER = postgres
 POSTGRES_PASSWORD = postgres
@@ -52,9 +49,9 @@ POSTGRES_DB = ChickoMenu
 
 ```
 
-create another .env file in ChickoMenu/settings/
+Create another .env file in ChickoMenu/settings/ with the following environment variables:
 
-sample .env
+## Sample .env file:
 
 ```sh
 DEBUG=yes
@@ -68,27 +65,33 @@ DB_USER=postgres
 DB_PASS=supersecretpassword
 
 ```
-and to run development server locally
+These variables are needed for the project to run correctly, and should be customized for your specific environment.
+
+# Running the Development Server
+
+To run the development server locally, use the following command:
 
 ```sh
 (env)$ python manage.py runserver --settings=ChickoMenu.settings.development
 
 ```
-And navigate to `http://127.0.0.1:8000/`.
+Then, navigate to http://127.0.0.1:8000/ in your web browser to view the site.
+
+# Running Locally with Docker
+If you prefer to run the application using Docker, follow these steps:
 
 
-## Running Locally with Docker
-
-1.build the image:
+1.Build the Docker image:
 
 ```sh
   $ docker-compose build .
 ```
-2.Spin up the containers
+2.Spin up the containers:
+
 ```sh
   $ docker-compose up
 ```
-then view the site at  http://localhost:8000/
+Once the containers are running, you can view the site at http://localhost:8000/.
 
 ## Important
 
@@ -101,25 +104,38 @@ Generate a new secret key for your Django application using a cryptographically 
  
 in your terminal and replacing the SECRET_KEY value in your settings file with the new key.
 
-## Tests
+# Running Tests
 
-To run the tests:
+To run the tests locally, use the following command:
+
 ```sh
 (env)$ python manage.py test --settings=ChickoMenu.settings.development
 ```
-and for docker 
+
+If you are using Docker, use the following command instead:
 
 ```sh
 (env)$ docker-compose run web python manage.py test  --settings=ChickoMenu.settings.development
 
 ```
-## API Docs 
-  navigate to `http://127.0.0.1:8000/swagger/`
-  navigate to `http://127.0.0.1:8000/redoc/`
+This will run the test suite and output the results in the console. Use this to ensure that code is functioning properly and to catch any errors before deploying to production.
 
+
+# API Documentation
+
+To view the API documentation, navigate to:
+
+http://127.0.0.1:8000/swagger/
+http://127.0.0.1:8000/redoc/
   
-## Features
- user plan,
- otp authentications, 
- token based  authentication,
- 
+# Features
+
+The ChickoMenu digital menu generator includes the following features:
+
+User plan
+OTP authentication
+Token-based authentication
+Celery 
+...
+
+These features enhance the functionality and security of the application.
