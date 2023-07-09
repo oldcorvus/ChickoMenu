@@ -1,4 +1,3 @@
-from unicodedata import category
 from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import (
@@ -13,9 +12,8 @@ from .serializers import (
     MenuSerializer,
 )
 from rest_framework.parsers import MultiPartParser
-
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404
-
 from .permissions import IsOwnerOrReadOnly, MenuOwnerOrReadOnly
 from .utils import get_code
 
@@ -23,9 +21,18 @@ class ListOfAllActiveMenus(ListAPIView):
     serializer_class = MenuSerializer
     permission_classes = [AllowAny]
 
-
     def get_queryset(self):
-        return Menu.active_menus.all()
+        # Check if the response is already cached
+        cache_key = 'active_menus_cache_key'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return cached_data
+
+        # If the response is not cached, compute it and cache it
+        queryset = Menu.active_menus.all()
+        cache.set(cache_key, queryset, timeout=600)  # cache for 10 minutes
+        return queryset
+
 
 class UserMenus(ListCreateAPIView):
     serializer_class = MenuSerializer
@@ -33,7 +40,16 @@ class UserMenus(ListCreateAPIView):
 
 
     def get_queryset(self):
-        return Menu.objects.filter(owner=self.request.user)
+        # Check if the response is already cached
+        cache_key = f'user_menus_cache_key_{self.request.user.id}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return cached_data
+
+        # If the response is not cached, compute it and cache it
+        queryset = Menu.objects.filter(owner=self.request.user)
+        cache.set(cache_key, queryset, timeout=600)  # cache for 10 minutes
+        return queryset
 
     def perform_create(self, serializer):
         code = get_code()
@@ -43,10 +59,18 @@ class UserMenus(ListCreateAPIView):
 class MenuDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrReadOnly]
     serializer_class = MenuDetailSerializer
-
     def get_object(self):
-        return get_object_or_404(Menu, pk=self.kwargs['pk'])
+        # Check if the response is already cached
+        cache_key = f'menu_detail_cache_key_{self.kwargs["pk"]}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return cached_data
 
+        # If the response is not cached, compute it and cache it
+        menu = get_object_or_404(Menu, pk=self.kwargs['pk'])
+        cache.set(cache_key, menu, timeout=600)  # cache for 10 minutes
+        return menu
+        
 class CategoryDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, MenuOwnerOrReadOnly]
     serializer_class = CategorySerializer
