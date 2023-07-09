@@ -19,7 +19,7 @@ class TimeStampedUUIDModel(UUIDModel):
     """
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False, null=True, blank=True)
-    modified_at = models.DateTimeField(auto_now=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True,null= True, editable=False)
 
     class Meta:
         abstract = True

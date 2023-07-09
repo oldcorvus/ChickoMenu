@@ -1,0 +1,63 @@
+[
+    {
+        "model": "plan.planitem",
+        "pk": "56a6f6d8-4d88-4b2c-8f4e-5e1c8f1d0d38",
+        "fields": {
+            "name": "menu_limit",
+            "description": "1"
+        }
+    },
+    {
+        "model": "plan.plan",
+        "pk": "b5c77b4f-425e-4d4f-a3f4-5a7b7e9a8e8d",
+        "fields": {
+            "name": "پلن رایگان",
+            "description": "پلن رایگان",
+            "price": 0,
+            "features": [
+                "56a6f6d8-4d88-4b2c-8f4e-5e1c8f1d0d38"
+            ]
+        }
+    },
+    {
+        "model": "plan.planitem",
+        "pk": "56d6f6d8-4d88-4b2c-8f4e-5e1c8f1d0d38",
+        "fields": {
+            "name": "menu_limit",
+            "description": "3"
+        }
+    },
+    {
+        "model": "plan.plan",
+        "pk": "d5c77b4f-425e-4d4f-a3f4-5a7b7e9a8e8d",
+        "fields": {
+            "name": "پلن پیشرفته",
+            "description": "پلن  پیشرفته",
+            "price": 0,
+            "features": [
+                "56d6f6d8-4d88-4b2c-8f4e-5e1c8f1d0d38"
+            ]
+        }
+    },
+    {
+        "model": "plan.planitem",
+        "pk": "56c6f6d8-4c88-4b2c-8f4e-5e1c8f1d0d38",
+        "fields": {
+            "name": "menu_limit",
+            "description": "10"
+        }
+    },
+    {
+        "model": "plan.plan",
+        "pk": "c5c77b4f-425e-4d4f-a3f4-5a7b7e9a8e8c",
+        "fields": {
+            "name": "پلن حرفه ای",
+            "description": "پلن حرفه ای",
+            "price": 0,
+            "features": [
+                "56c6f6d8-4c88-4b2c-8f4e-5e1c8f1d0d38"
+            ]
+        }
+    }
+]
+
