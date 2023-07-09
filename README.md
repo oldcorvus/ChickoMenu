@@ -90,11 +90,16 @@ And navigate to `http://127.0.0.1:8000/`.
 ```
 then view the site at  http://localhost:8000/
 
-## Imporatant
+## Important
 
 It is important to change sensitive information such as secret keys and API keys before deploying your application to production. Leaving default or test values in production can make your application vulnerable to security risks such as data breaches and unauthorized access
 
-Generate a new secret key for your Django application using a cryptographically secure random generator. You can do this by running python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())' in your terminal and replacing the SECRET_KEY value in your settings file with the new key.
+Generate a new secret key for your Django application using a cryptographically secure random generator. You can do this by running
+```sh
+ python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())
+ ```
+ 
+in your terminal and replacing the SECRET_KEY value in your settings file with the new key.
 
 ## Tests
 
