@@ -5,7 +5,8 @@ services:
     build: .
     command:  >
       sh -c "python manage.py migrate --settings=ChickoMenu.settings.development &&
-             python manage.py runserver 0.0.0.0:8089 --settings=ChickoMenu.settings.development"
+             python manage.py runserver 0.0.0.0:8089 --settings=ChickoMenu.settings.development &&
+             python manage.py loaddata plan  --settings=ChickoMenu.settings.development"
     volumes:
       - .:/code
     ports:
