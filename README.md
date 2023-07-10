@@ -135,6 +135,7 @@ The ChickoMenu digital menu generator includes the following features:
 User plan
 Catch for menu views
 OTP authentication
+Multi language
 Token-based authentication
 Celery 
 ...

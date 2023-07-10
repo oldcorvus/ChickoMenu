@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import (
 ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView,
-CreateAPIView, UpdateAPIView, DestroyAPIView,
+CreateAPIView
 )
 from menu.models import Menu, Category, MenuItem
 from .serializers import (
@@ -10,11 +10,12 @@ from .serializers import (
     MenuDetailSerializer,
     MenuItemSerializer,
     MenuSerializer,
+    
 )
 from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
-from .permissions import IsOwnerOrReadOnly, MenuOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, MenuOwnerOrReadOnly, MenuLimitPermission
 from .utils import get_code
 
 class ListOfAllActiveMenus(ListAPIView):
@@ -36,7 +37,7 @@ class ListOfAllActiveMenus(ListAPIView):
 
 class UserMenus(ListCreateAPIView):
     serializer_class = MenuSerializer
-    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly, MenuLimitPermission]
 
 
     def get_queryset(self):
@@ -52,6 +53,7 @@ class UserMenus(ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
+
         code = get_code()
         serializer.save(owner=self.request.user, code=code)
 

@@ -1,6 +1,7 @@
 from urllib import response
 from django.test import TestCase, RequestFactory
 from menu.models import Menu,Category, MenuItem
+from plan.models import Plan, PlanItem, UserPlan
 from ..views import ListOfAllActiveMenus
 from ..serializers import MenuSerializer,CategorySerializer,MenuDetailSerializer,MenuItemSerializer
 from django.contrib.auth import get_user_model
@@ -43,6 +44,14 @@ class UserMenusTestCase(APITestCase):
         self.user = User.objects.create(username="testuser", first_name="Test", last_name="User",
                                         phone_number="1234567890", email="testuser@example.com",
                                         is_active=True, is_admin=False, is_staff=False)
+
+        self.plan_item1 = PlanItem.objects.create(name='duration', description='1')
+        self.plan_item2 = PlanItem.objects.create(name='menu_limit', description='1')
+        self.plan = Plan.objects.create(name='Basic Plan', description='This is a basic plan', price=10.0)
+        self.plan.features.add(self.plan_item1)
+        self.plan.features.add(self.plan_item2)
+        plan = UserPlan.objects.create(user= self.user, plan = self.plan)
+        plan.activate()
         self.token = Token.objects.create(user=self.user)
         self.client.force_authenticate(user=self.user, token=self.token)
 

@@ -19,12 +19,14 @@ class PlanItem(TimeStampedUUIDModel):
     def __str__(self):
         return self.name
 
+
 class UserPlan(TimeStampedUUIDModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
+ 
 
     def activate(self):
         active_plan = self.user.userplan_set.filter(is_active=True).first()
@@ -38,6 +40,7 @@ class UserPlan(TimeStampedUUIDModel):
         self.is_active = False
         self.end_date = timezone.now()
         self.save()
+
 
     class Meta:
         unique_together = ('user', 'plan','is_active','id')

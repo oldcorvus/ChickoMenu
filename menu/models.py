@@ -21,6 +21,7 @@ class UserMenusManager(models.Manager):
         return super().get_queryset().filter(owner=user)
 
 
+
 class Menu(TimeStampedUUIDModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
