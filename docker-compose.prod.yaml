@@ -1,0 +1,127 @@
+version: "3.9"
+
+services:
+
+  
+  web:
+    build: .
+    command:  >
+      sh -c "python manage.py migrate --settings=ChickoMenu.settings.production &&
+      python manage.py loaddata plan  --settings=ChickoMenu.settings.production &&
+            gunicorn ChickoMenu.wsgi:application --bind 0.0.0.0:8000 --workers 4"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - nginx
+    env_file:
+      - "./.env.db"
+    networks:
+      - main
+      - nginx_network
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    build:
+      context:  ./webserver
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - static_file:/usr/src/app/static
+      - media_file:/usr/src/app/media
+    depends_on:
+      - front
+    networks:
+      - nginx_network
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+    networks:
+      - main
+
+  front:
+    build:
+      context: ./chicko-frontend/code
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    container_name: chicko-frontend
+    volumes:
+      - ./chicko-frontend/code:/usr/code
+      - /usr/code/node_modules
+    networks:
+      - main
+      - nginx_network
+
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - main
+
+  celery:
+    build: ./
+    command: celery -A ChickoMenu worker -l info 
+    env_file:
+      - "./.env"
+    volumes:
+      - .:/app
+    networks:
+      - main
+    depends_on:
+      - redis
+
+  flower:
+    build: .
+    command: celery  -A ChickoMenu --broker=redis://redis:6379  flower 
+    volumes:
+      - .:/app
+    networks:
+      - main
+      - nginx_network
+    depends_on:
+      - redis
+      - celery
+    ports:
+      - "5555:5555"
+
+  chat:
+       build: 
+        context:  ./ChickoChat
+        dockerfile: Dockerfile
+       ports:
+           - "8080:8080"
+  mongo:
+    container_name: mongo
+    image: mongo:4.4
+    ports:
+       - "27017:27017"
+    command: mongod
+
+networks:
+  main:
+    external: true
+    
+  nginx_network:
+    external: true
+
+volumes:
+  postgres_data:
+    external: true
+
+  static_file:
+    external: true
+  
+  media_file:
+    external: true
