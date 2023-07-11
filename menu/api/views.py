@@ -28,10 +28,10 @@ class ListOfAllActiveMenus(ListAPIView):
         cached_data = cache.get(cache_key)
         if cached_data:
             return cached_data
-
+    
         # If the response is not cached, compute it and cache it
         queryset = Menu.active_menus.all()
-        cache.set(cache_key, queryset, timeout=600)  # cache for 10 minutes
+        cache.set(cache_key, queryset, timeout=60)  # cache for 1 minutes
         return queryset
 
 
@@ -49,7 +49,7 @@ class UserMenus(ListCreateAPIView):
 
         # If the response is not cached, compute it and cache it
         queryset = Menu.objects.filter(owner=self.request.user)
-        cache.set(cache_key, queryset, timeout=600)  # cache for 10 minutes
+        cache.set(cache_key, queryset, timeout=60)  # cache for 1 minutes
         return queryset
 
     def perform_create(self, serializer):
@@ -70,7 +70,7 @@ class MenuDetail(RetrieveUpdateDestroyAPIView):
 
         # If the response is not cached, compute it and cache it
         menu = get_object_or_404(Menu, pk=self.kwargs['pk'])
-        cache.set(cache_key, menu, timeout=600)  # cache for 10 minutes
+        cache.set(cache_key, menu, timeout=10)  # cache for 1 minutes
         return menu
         
 class CategoryDetail(RetrieveUpdateDestroyAPIView):
