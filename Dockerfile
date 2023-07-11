@@ -10,6 +10,8 @@ WORKDIR /code
 #RUN apt-get update && apt-get install libgdal-dev
 #RUN export CPLUS_INCLUDE_PATH=/usr/include/gdal
 #RUN export C_INCLUDE_PATH=/usr/include/gdal
+RUN apt-get update && \
+    apt-get install -y gettext
 # Install dependencies
 COPY ./requirements/ .
 RUN pip install -r development.txt

@@ -16,10 +16,8 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 API_KEY= env("API_KEY")
 
-LANGUAGES = (
-    ('en', _('English')),
-    ('fa', _('Persian')),
-)
+
+
 
 
 INSTALLED_APPS = [
@@ -129,15 +127,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = "en-GB"
-
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = 'fa'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
+
+LANGUAGES = [
+    ('fa', _('Persian')),
+    ('en', _('English')),
+]
 
 STATIC_URL = env("STATIC_URL")
 

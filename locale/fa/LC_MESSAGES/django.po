@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-08 18:12+0200\n"
+"POT-Creation-Date: 2023-07-11 13:18+0430\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: ChickoMenu/settings/base.py:20
-msgid "English"
-msgstr "انگلیسی"
-
-#: ChickoMenu/settings/base.py:21
-msgid "Persian"
-msgstr "فارسی"
 
 #: accounts/api/serializers.py:21 accounts/api/serializers.py:28
 msgid "Username cannot be blank."
@@ -40,12 +32,16 @@ msgstr "شماره تماس نمیتواند خالی باشد"
 
 #: accounts/api/serializers.py:27
 msgid "This username has already been taken. Please choose a different one."
-msgstr "این نام کاربری از قبل برای کاربر دیگری سیو شده است لطفا  نام کاربری دیگری وارد کنید"
+msgstr ""
+"این نام کاربری از قبل برای کاربر دیگری سیو شده است لطفا  نام کاربری دیگری "
+"وارد کنید"
 
 #: accounts/api/serializers.py:31
 msgid ""
 "This phone number has already been taken. Please choose a different one."
-msgstr "این شماره تماس از قبل برای کاربر دیگری سیو شده است لطفا شماره تماس دیگری وارد کنید"
+msgstr ""
+"این شماره تماس از قبل برای کاربر دیگری سیو شده است لطفا شماره تماس دیگری "
+"وارد کنید"
 
 #: accounts/api/serializers.py:32
 msgid "Phone number cannot be blank."
@@ -107,6 +103,10 @@ msgstr "آدرس"
 msgid "post code"
 msgstr "کد پستی"
 
+#: menu/api/permissions.py:21
+msgid "You have exceeded your menu limit for this plan."
+msgstr "برای پلن فعلی خود نمی توانید تعداد بیشتری منو بسازید"
+
 #: menu/api/serializers.py:107 menu/api/tests/test_serializers.py:168
 msgid "Name cannot be blank."
 msgstr "تصویر نمیتواند خالی باشد"
@@ -115,42 +115,52 @@ msgstr "تصویر نمیتواند خالی باشد"
 msgid "Image cannot be blank."
 msgstr "تصویر نمیتواند خالی باشد"
 
-#: menu/models.py:67
+#: menu/models.py:68
 msgid "menu"
 msgstr "منو"
 
-#: menu/models.py:73
+#: menu/models.py:74
 msgid "category"
 msgstr "دسته بندی"
 
-#: menu/models.py:77
+#: menu/models.py:78
 msgid "name"
 msgstr "نام"
 
-#: menu/models.py:81
+#: menu/models.py:82
 msgid "description"
 msgstr "توضیحات"
 
-#: menu/models.py:87
+#: menu/models.py:88
 msgid "price"
 msgstr "قیمت"
 
-#: menu/models.py:93
+#: menu/models.py:94
 msgid "discount"
 msgstr "تخفیف"
 
-#: menu/models.py:97
+#: menu/models.py:98
 msgid "image"
 msgstr "تصویر"
 
-#: menu/models.py:103
+#: menu/models.py:104
 msgid "is available"
 msgstr "فعال بودن"
 
-#: menu/models.py:107
+#: menu/models.py:108
 msgid "menu item"
 msgstr "ایتم منو"
 
-#: menu/models.py:108
+#: menu/models.py:109
 msgid "menu items"
 msgstr "ایتم های منو"
+
+#: payment/api/views.py:30
+msgid "No active plan found for this user."
+msgstr "پلن فعالی برای کاربر یافت نشد"
+
+#~ msgid "English"
+#~ msgstr "انگلیسی"
+
+#~ msgid "Persian"
+#~ msgstr "فارسی"
