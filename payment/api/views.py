@@ -24,7 +24,8 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
         # Get the user plan with the given id and is_active=True
         user_plan_id = request.data.get('user_plan_id')  # Assuming you are passing user_plan_id in the request data
         try:
-            user_plan = UserPlan.objects.get(id=user_plan_id, is_active=True, user=request.user)
+            user_plan = UserPlan.objects.get(id=user_plan_id, user=request.user)
+        
         except UserPlan.DoesNotExist:
             return Response({"error": _("No active plan found for this user.")}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -33,6 +34,13 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
             user_plan=user_plan,
             payable_amount=user_plan.plan.price
         )
+
+        if user_plan.plan.name == 'Free':
+            order.is_paid = True
+            order.save()
+            user_plan.is_active = True
+            user_plan.save()
+
         serializer = self.get_serializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
