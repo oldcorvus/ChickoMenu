@@ -22,7 +22,7 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         # Get the user plan with the given id and is_active=True
-        user_plan_id = request.data.get('user_plan_id')  # Assuming you are passing user_plan_id in the request data
+        user_plan_id = request.data.get('user_plan_id')  
         try:
             user_plan = UserPlan.objects.get(id=user_plan_id, user=request.user)
         
@@ -37,8 +37,8 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
 
         if user_plan.plan.name == 'Free':
             order.is_paid = True
-            order.save()
             user_plan.is_active = True
+            order.save()
             user_plan.save()
 
         serializer = self.get_serializer(order)
