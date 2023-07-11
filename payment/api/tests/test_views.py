@@ -14,7 +14,7 @@ class OrderListCreateAPIViewTests(APITestCase):
     def setUp(self):
         self.user =  User.objects.create_user(username='testuser', password='testpass',
         email="testemail@email.com", phone_number="09905150258")
-        self.user_plan = UserPlan.objects.create(user=self.user, plan=Plan.objects.create(name='Test Plan', price=10), is_active=True)
+        self.user_plan = UserPlan.objects.create(user=self.user, plan=Plan.objects.create(name='Test Plan', price=10), is_active=False)
         self.url = reverse('payment:order_list_create')
         self.token = Token.objects.create(user=self.user)
 
@@ -25,6 +25,19 @@ class OrderListCreateAPIViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Order.objects.count(), 1)
         self.assertEqual(Order.objects.first().user_plan, self.user_plan)
+
+
+    def test_create_order_with_valid_user_free_plan(self):
+        self.client.force_authenticate(user=self.user, token = self.token)
+        plan = Plan.objects.create(name='Free', price=10)
+        user_plan = UserPlan.objects.create(user=self.user, plan=plan)
+        data = {'user_plan_id': user_plan.id}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Order.objects.count(), 1)
+        order = Order.objects.get(user_plan = user_plan)
+        self.assertTrue(order.user_plan.is_active)
+        self.assertTrue(order.is_paid)
 
     def test_create_order_with_invalid_user_plan_id(self):
         self.client.force_authenticate(user=self.user, token = self.token)
