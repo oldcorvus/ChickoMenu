@@ -7,7 +7,7 @@ from rest_framework import generics, permissions
 
 class PlanViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
-    queryset = Plan.objects.prefetch_related('features').all()
+    queryset = Plan.objects.select_related('features').all()
     serializer_class = PlanSerializer
 
 class PlanItemViewSet(viewsets.ModelViewSet):
