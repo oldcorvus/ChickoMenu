@@ -48,7 +48,6 @@ class MenuDetailSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     code  = serializers.ReadOnlyField()
     is_paid = serializers.ReadOnlyField()
-    is_active = serializers.ReadOnlyField()
     owner = UserSerializer(read_only=True)
     
     class Meta:
