@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
                 ('is_paid', models.BooleanField(default=False)),
                 ('authority', models.CharField(blank=True, max_length=36, null=True)),
                 ('user_plan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='plan.userplan')),
+                ('ref_id', models.CharField(blank=True, max_length=36, null=True)),
             ],
             options={
                 'abstract': False,

@@ -45,7 +45,7 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
 
         if user_plan.plan.name == 'Free':
             order.is_paid = True
-            user_plan.is_active = True
+            user_plan.is_paid = True
             order.save()
             user_plan.save()
 
