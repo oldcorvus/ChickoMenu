@@ -58,7 +58,8 @@ class UserPlanSerializer(serializers.ModelSerializer):
     start_date = serializers.ReadOnlyField()
     end_date = serializers.ReadOnlyField()
     is_active =  serializers.ReadOnlyField()
-
+    plan = PlanSerializer(read_only = True)
+    
     class Meta:
         model = UserPlan
         fields = ('id', 'user', 'plan', 'start_date', 'end_date', 'is_active')
