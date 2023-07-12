@@ -28,6 +28,7 @@ class UserPlanCreateAPIView(generics.CreateAPIView):
 class UserPlansAPIView(generics.ListAPIView):
     serializer_class = UserPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
+    queryset = UserPlan.objects.select_related('plan').all()
 
     def get_queryset(self):
         return UserPlan.objects.filter(user=self.request.user)
