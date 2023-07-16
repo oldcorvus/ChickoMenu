@@ -29,13 +29,13 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, ]
 
     def create(self, request, *args, **kwargs):
-        # Get the user plan with the given id and is_active=True
+        # Get the user plan with the given id and is_active=False
         user_plan_id = request.data.get('user_plan_id')  
         try:
             user_plan = UserPlan.objects.get(id=user_plan_id, user=request.user)
         
         except UserPlan.DoesNotExist:
-            return Response({"error": _("No active plan found for this user.")}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": _("No  plan found for this user.")}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create a new order for the active user plan
         order = Order.objects.create(
@@ -46,6 +46,7 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
         if user_plan.plan.name == 'Free':
             order.is_paid = True
             user_plan.is_paid = True
+            user_plan.activate()
             order.save()
             user_plan.save()
 
@@ -147,6 +148,7 @@ class VerifyPaymentView(APIView):
                 order.ref_id = response_data.get('RefID')
                 order.is_paid = True
                 order.user_plan.is_paid = True
+                order.user_plan.activate()
                 order.user_plan.save() 
                 order.save()
 
