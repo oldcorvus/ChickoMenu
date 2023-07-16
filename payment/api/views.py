@@ -7,7 +7,7 @@ from .permissions import IsUserPlanOwner
 from rest_framework.views import APIView
 from django.conf import settings
 import requests
-import json
+from django.db import transaction
 try:
     from django.utils.translation import ugettext_lazy as _
 except ImportError:
@@ -97,10 +97,12 @@ class PaymentView(APIView):
             if response_data.get('Status') == 100:
                 # Get the payment URL from the response data
                 payment_url = f"https://sandbox.zarinpal.com/pg/StartPay/{response_data.get('Authority')}"
+                
+                with transaction.atomic():
 
-                # Save the payment authority to the database
-                order.authority = response_data.get('Authority')
-                order.save()
+                    # Save the payment authority to the database
+                    order.authority = response_data.get('Authority')
+                    order.save()
 
                 return Response({'payment_url': payment_url})
 
@@ -143,14 +145,15 @@ class VerifyPaymentView(APIView):
 
             # Check if the payment was successful
             if response_data.get('Status') == 100:
-                # Save the payment information to the database
-                order.authority = response_data.get('Authority')
-                order.ref_id = response_data.get('RefID')
-                order.is_paid = True
-                order.user_plan.is_paid = True
-                order.user_plan.activate()
-                order.user_plan.save() 
-                order.save()
+                with transaction.atomic():
+                    # Save the payment information to the database
+                    order.authority = response_data.get('Authority')
+                    order.ref_id = response_data.get('RefID')
+                    order.is_paid = True
+                    order.user_plan.is_paid = True
+                    order.user_plan.activate()
+                    order.user_plan.save() 
+                    order.save()
 
                 # Return a success response
                 return Response({'success': True})
